@@ -1,53 +1,8 @@
 import e from "express";
 const orderRoute = e.Router();
+import type { LimitOrderRequest, Market, MarketOrderRequest } from "@repo/common";
 
-//user type
 
-type Balances = Record<string, number>;
-
-interface User {
-  id: string;
-  balance: number;
-  stocks: Balances;
-}
-
-const user1: User = {
-  id: "1",
-  balance: 2000,
-  stocks: {},
-};
-const user2: User = {
-  id: "2",
-  balance: 2000,
-  stocks: {},
-};
-// order book
-type SingleOrder = {
-  userId: string;
-  stock_quantity: number;
-};
-
-type PriceLevel = {
-  price: number;
-  totalQty: number;
-  orders: SingleOrder[];
-};
-
-type OrderSide = {
-  totalPriceQty: number;
-  priceLevels: PriceLevel[];
-};
-
-type Market = {
-  YES: {
-    BUY: OrderSide;
-    SELL: OrderSide;
-  };
-  NO: {
-    BUY: OrderSide;
-    SELL: OrderSide;
-  };
-};
 
 // this contains the markett Id and the Market Associated with it 
 type OrderBookSystem=Record<string,Market>
@@ -74,24 +29,12 @@ const orderBook: Market = {
   },
 };
 
-type MarketOrderRequest = {
-  userId: string;
-  ticket_type: "YES" | "NO";
-  order_type: "BUY" | "SELL";
-  quantity: number;
-};
 
-type LimitOrderRequest = {
-  userId: string;
-  ticket_type: "YES" | "NO";
-  order_type: "BUY" | "SELL";
-  quantity: number;
-  price: number;
-};
+
 
 orderRoute.post("/marketOrder", (req, res) => {
   // eg YES , BUY , 10
-  let { userId, ticket_type, order_type, quantity }: MarketOrderRequest =
+  let { userId, ticket_type, order_type, quantity }:MarketOrderRequest =
     req.body;
 
   if (!userId || !ticket_type || !order_type || !quantity) {

@@ -1,6 +1,6 @@
 import e from 'express'
 import cors from 'cors'
-import orderRoute from '../routes/order.route';
+import orderRoute from './routes/order.route';
 const app=e();
 const PORT = process.env.PORT ?? 8080
 console.log( typeof PORT)

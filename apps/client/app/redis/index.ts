@@ -22,7 +22,8 @@ export class RedisManager{
 
     public subscibeToEvent(eventName:string){
         this.client.subscribe(eventName,(message)=>{
-            
+            const data =JSON.parse(message);
+            return data;
         })
     }
 

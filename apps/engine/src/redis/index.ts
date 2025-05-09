@@ -13,9 +13,14 @@ class RedisManager{
         this.client.connect();
         
     }
-    public async pushToQueue(clientId:string,message:any){
+     async pushToQueue(clientId:string,message:any){
         this.client.lPush(clientId,JSON.stringify(message))
-    } 
+    }
+    
+    public publishEvent(eventName:string,message:any){
+        this.client.publish(eventName,JSON.stringify(message))
+    }   
+    
 
     public getInstance(){
         if(!RedisManager.instance){

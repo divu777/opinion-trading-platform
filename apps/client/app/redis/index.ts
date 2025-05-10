@@ -1,4 +1,5 @@
 import { createClient } from "@redis/client";
+import { LimitOrderRequest, MarketOrderRequest } from "@repo/common";
 import { randomUUID } from "crypto";
 import type { RedisClientType } from "redis";
 
@@ -15,19 +16,20 @@ export class RedisManager{
 
         
     }
-    public async pushToQueue(data:any){
+    pushToEngine(data:LimitOrderRequest | MarketOrderRequest){
         const uniqueId=randomUUID()
-        this.client.lPush("order.queue",JSON.stringify({uniqueId,...data}))
+        this.client.lPush("order.queue",JSON.stringify({id:uniqueId,...data}))
+        return uniqueId;
     } 
 
-    public subscibeToEvent(eventName:string){
+    async subscibeToEvent(eventName:string){
         this.client.subscribe(eventName,(message)=>{
             const data =JSON.parse(message);
             return data;
         })
     }
 
-    public static getInstance(){
+    static getInstance(){
         if(!RedisManager.instance){
             return new RedisManager()
         }

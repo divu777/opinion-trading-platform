@@ -1,6 +1,9 @@
 import e from 'express'
 import cors from 'cors'
 import orderRoute from './routes/order.route';
+import { RedisManager } from './redis';
+
+
 const app=e();
 const PORT = process.env.PORT ?? 8080
 console.log( typeof PORT)
@@ -12,6 +15,9 @@ app.use("/api/v1/order",orderRoute);
 
 
 
+const redisInstance =RedisManager.getInstance();
+
+redisInstance.subscribeToOrders();
 
 
 app.get("/",(req,res)=>{

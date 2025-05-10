@@ -33,7 +33,13 @@ export const POST=async(req:Request)=>{
             })
         }
 
-        await redisInstance.pushToQueue({
+        if(checkUserExist.balance<=quantity*price*100){
+            return NextResponse.json({
+                message:"Not Suffiecient Balance"
+            });
+        }
+
+        const eventId=redisInstance.pushToEngine({
             userId,
             ticket_type,
             order_type,
@@ -41,8 +47,8 @@ export const POST=async(req:Request)=>{
             price
         });
 
-        await redisInstance
-        
+        const response = await redisInstance.subscibeToEvent(eventId);
+        return NextResponse.json(response);
     } catch (error) {
         console.log(error + " Error in sending Post Request. ");
     }

@@ -18,4 +18,5 @@ model user{
   id String @unique @default(uuid())
 
   name String 
+  balance Int 
 }

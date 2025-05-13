@@ -1,19 +1,11 @@
+import { prisma } from '@repo/db/client';
 import type { MarketOrderRequest ,LimitOrderRequest} from '@repo/common';
 import { createClient } from "@redis/client";
 import type { RedisClientType } from "redis";
+import { SubscribeMessageType } from '@repo/common';
 
 
 
-
-type SubscribeMessageType={
-    type:"market_order",
-    id:string,
-    data:MarketOrderRequest
-} | {
-    type:"limit_order",
-    id:string,
-    data:LimitOrderRequest
-}
 export class RedisManager{
     private client:RedisClientType
     private static instance: RedisManager;
@@ -38,13 +30,76 @@ export class RedisManager{
     }
     
     
-    ManageOrderRecieved(data: SubscribeMessageType){
+    async ManageOrderRecieved(data: SubscribeMessageType){
         
-        if(data.type=="limit_order"){
-            const {userId,ticket_type,order_type,quantity,price}=data.data;
-            
+        if(data.type=="buy"){
+            await this.handleBuyOrder(data)
+        }else{
+            await this.handleSellOrder(data)
         }
     }
+
+
+    async handleBuyOrder(data: SubscribeMessageType){
+        const {userId,ticket_type,order_type,quantity,price}=data.payload;
+
+        if (!userId || !ticket_type || !order_type || !quantity || !price) {
+      return this.publishToAPI(data.eventId,{
+        message: "Missing required fields",
+        success: false,
+      });
+    }
+
+
+     if (quantity <= 0) {
+      return this.publishToAPI(data.eventId,{
+        message: "Quantity must be positive",
+        success: false,
+      });
+    }
+
+    if (price <= 0 || price > 10) {
+      return this.publishToAPI(data.eventId,{
+        message: "Price must be between 0 and 10",
+        success: false,
+      });
+    }
+
+        // check balance 
+        const userExist=await prisma.user.findUnique({
+            where:{
+                id:userId
+            }
+        });
+
+        if(!userExist){
+            return this.publishToAPI(data.eventId,{
+                message:"User Doesn't Exist",
+                success:false
+            })
+        }
+
+        if(userExist.balance<price*quantity*100){
+            this.publishToAPI(data.eventId,{
+                message:"Insufficient Balances",
+                success:false
+            })
+        }
+
+        const counterAction
+
+
+
+
+
+
+    }
+
+
+    async handleSellOrder(data:SubscribeMessageType){
+        const {userId,ticket_type,order_type,quantity,price}=data.payload;
+    }
+
     
 
     static getInstance(){

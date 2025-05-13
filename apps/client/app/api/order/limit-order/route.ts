@@ -39,7 +39,7 @@ export const POST=async(req:Request)=>{
             });
         }
 
-        const eventId=redisInstance.pushToEngine({
+        const eventId:string=await redisInstance.pushToEngine({
             userId,
             ticket_type,
             order_type,

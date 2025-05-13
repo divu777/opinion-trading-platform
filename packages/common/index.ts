@@ -81,7 +81,8 @@ export const MarketOrderSchema=z.object({
     userId:z.string({message:"Invalid User Id."}),
     ticket_type:z.enum(["YES","NO"],{message:"Invalid Ticket Type Provided."}),
     order_type:z.enum(["BUY","SELL"],{message:"Invaid Order Type Provided."}),
-    quantity:z.number().int().positive({message:"Invalid quantity provided."})
+    quantity:z.number().int().positive({message:"Invalid quantity provided."}),
+    marketId:z.string({message:"Event Id not specificed"})
 })
 
 export type MarketOrderRequest=z.infer<typeof MarketOrderSchema>
@@ -96,3 +97,18 @@ export const LimitOrderSchema=z.object({
 })
 
 export type LimitOrderRequest=z.infer<typeof LimitOrderSchema>
+
+
+export type SubscribeMessageType={
+  type:"buy",
+  eventId:string,
+  payload: LimitOrderRequest
+} | {
+  type:"sell",
+    eventId:string,
+  payload: LimitOrderRequest
+} 
+
+//  cancel order type 
+
+// start and resolve but we will deal with that later 

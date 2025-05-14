@@ -20,3 +20,9 @@ model user{
   name String 
   balance Int 
 }
+
+model market{
+  id String @unique @default(uuid())
+
+  name String
+}

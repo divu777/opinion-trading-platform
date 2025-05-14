@@ -30,7 +30,7 @@ type PriceLevel = {
 };
 
 type OrderSide = {
-  totalPriceQty: number;
+  totalQty: number;
   priceLevels: PriceLevel[];
 };
 
@@ -50,21 +50,21 @@ export type OrderBookSystem=Record<string,Market>
 const orderBook: Market = {
   YES: {
     BUY: {
-      totalPriceQty: 0,
+      totalQty: 0,
       priceLevels: [],
     },
     SELL: {
-      totalPriceQty: 0,
+      totalQty: 0,
       priceLevels: [],
     },
   },
   NO: {
     BUY: {
-      totalPriceQty: 0,
+      totalQty: 0,
       priceLevels: [],
     },
     SELL: {
-      totalPriceQty: 0,
+      totalQty: 0,
       priceLevels: [],
     },
   },
@@ -93,21 +93,32 @@ export const LimitOrderSchema=z.object({
     ticket_type:z.enum(["YES","NO"],{message:"Invalid Ticket Type Provided."}),
     order_type:z.enum(["BUY","SELL"],{message:"Invaid Order Type Provided."}),
     quantity:z.number().int().positive({message:"Invalid quantity provided."}),
-    price:z.number().int().positive().min(0.5).max(9.5)
+    price:z.number().int().positive().min(0.5).max(9.5,{message:"Invalid Price"}),
+    marketId:z.string({message:"Event Id not specificed"})
 })
 
 export type LimitOrderRequest=z.infer<typeof LimitOrderSchema>
 
+export const StartMarketSchema=z.object({
+  marketName:z.string().min(6).max(50,{message:"Invalid Market ID Admin sensei"})
+})
 
-export type SubscribeMessageType={
+export type StartMarketType=z.infer<typeof StartMarketSchema>
+
+export type SubscribeMessageType=
+{
   type:"buy",
   eventId:string,
   payload: LimitOrderRequest
 } | {
   type:"sell",
-    eventId:string,
+  eventId:string,
   payload: LimitOrderRequest
-} 
+} | {
+  type:"createMarket",
+  eventId:string,
+  payload:StartMarketType
+}
 
 //  cancel order type 
 

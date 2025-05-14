@@ -9,26 +9,25 @@ type OrderBookSystem=Record<string,Market>
 const orderBook: Market = {
   YES: {
     BUY: {
-      totalPriceQty: 0,
+      totalQty: 0,
       priceLevels: [],
     },
     SELL: {
-      totalPriceQty: 0,
+      totalQty: 0,
       priceLevels: [],
     },
   },
   NO: {
     BUY: {
-      totalPriceQty: 0,
+      totalQty: 0,
       priceLevels: [],
     },
     SELL: {
-      totalPriceQty: 0,
+      totalQty: 0,
       priceLevels: [],
     },
   },
 };
-
 
 
 
@@ -56,7 +55,7 @@ orderRoute.post("/marketOrder", (req, res) => {
 
   try {
     // check do we even have totalorders more than quantity = liquidity in market
-    if (counterSide.totalPriceQty < quantity) {
+    if (counterSide.totalQty < quantity) {
       return res.status(400).json({
         message: "Market order could not be fulfilled (insufficient liquidity)",
         success: false,
@@ -103,7 +102,7 @@ orderRoute.post("/marketOrder", (req, res) => {
 
       if (priceLevelFillQuantity > 0) {
          priceLevel.totalQty -= priceLevelFillQuantity;
-        counterSide.totalPriceQty -= priceLevelFillQuantity;
+        counterSide.totalQty -= priceLevelFillQuantity;
         fills.push({
           price: priceLevel.price,
           quantity: priceLevelFillQuantity,
@@ -215,7 +214,7 @@ orderRoute.post("/limitOrder", (req, res) => {
 
       if (priceLevelFillQuantity > 0) {
         priceLevel.totalQty -= priceLevelFillQuantity;
-        counterSide.totalPriceQty -= priceLevelFillQuantity;
+        counterSide.totalQty -= priceLevelFillQuantity;
 
         fills.push({
           price: priceLevel.price,
@@ -259,7 +258,7 @@ orderRoute.post("/limitOrder", (req, res) => {
 
       // Update counters
       priceLevel.totalQty += remainingQuantity;
-      orderSide.totalPriceQty += remainingQuantity;
+      orderSide.totalQty += remainingQuantity;
     }
 
     return res.status(200).json({

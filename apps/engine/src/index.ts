@@ -1,7 +1,7 @@
 import e from 'express'
 import cors from 'cors'
 import orderRoute from './routes/order.route';
-import { RedisManager } from './redis';
+import { Manager } from './redis/index';
 
 
 const app=e();
@@ -15,7 +15,7 @@ app.use("/api/v1/order",orderRoute);
 
 
 
-const redisInstance =RedisManager.getInstance();
+const redisInstance =Manager.getInstance();
 
 redisInstance.subscribeToOrders();
 

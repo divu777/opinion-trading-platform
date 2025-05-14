@@ -17,9 +17,21 @@ export const POST=async(req:Request)=>{
         
         }
         const redisInstance = RedisManager.getInstance()
-        const {userId,ticket_type,order_type,quantity,price}:LimitOrderRequest=body;
+        const {userId,ticket_type,order_type,quantity,price,marketId}:LimitOrderRequest=body;
+
+        const marketExist = await prisma.market.findUnique({
+            where:{
+                id:marketId
+            }
+        })
 
 
+        if(!marketExist){
+            return NextResponse.json({
+                message:"Invalid Market Id",
+                status:false
+            })
+        }
         const checkUserExist= await prisma.user.findUnique({
             where:{
                 id:userId
@@ -44,7 +56,8 @@ export const POST=async(req:Request)=>{
             ticket_type,
             order_type,
             quantity,
-            price
+            price,
+            marketId
         });
 
         const response = await redisInstance.subscibeToEvent(eventId);

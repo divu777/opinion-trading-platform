@@ -24,14 +24,13 @@ type SingleOrder = {
 };
 
 type PriceLevel = {
-  price: number;
   totalQty: number;
   orders: SingleOrder[];
 };
 
 type OrderSide = {
   totalQty: number;
-  priceLevels: PriceLevel[];
+  priceLevels: Record<number,PriceLevel> // this will be like uk each price and then how much quantity and then array or orders i can iterate
 };
 
 export type Market = {
@@ -100,10 +99,14 @@ export const LimitOrderSchema=z.object({
 export type LimitOrderRequest=z.infer<typeof LimitOrderSchema>
 
 export const StartMarketSchema=z.object({
-  marketName:z.string().min(6).max(50,{message:"Invalid Market ID Admin sensei"})
+  marketId:z.string().min(6).max(50,{message:"Invalid Market ID Admin sensei"})
 })
 
+
+
 export type StartMarketType=z.infer<typeof StartMarketSchema>
+
+export type GetMarketOrderBook=z.infer<typeof StartMarketSchema>
 
 export type SubscribeMessageType=
 {
@@ -118,7 +121,12 @@ export type SubscribeMessageType=
   type:"CREATE_MARKET",
   eventId:string,
   payload:StartMarketType
+} | {
+  type:"GET_MARKET_ORDERBOOK",
+  eventId:string,
+  payload:GetMarketOrderBook
 }
+
 
 //  cancel order type 
 

@@ -2,22 +2,25 @@ import { prisma } from '@repo/db/client';
 import { createClient } from "@redis/client";
 import type { RedisClientType } from "redis";
 import type { Market, SubscribeMessageType,OrderBookSystem } from '@repo/common';
+import { collapseTextChangeRangesAcrossMultipleVersions } from 'typescript';
 
-type ResponseToAPI={
-    eventId:string,
-    payload:any
+type BALANCES={
+    balance:number,
+    locked:number
 }
 export class Manager{
     private client:RedisClientType
     private static instance: Manager;
-    private OrderBook:OrderBookSystem={}
+    private OrderBook:OrderBookSystem;
+    private User_Balances:Record<string,BALANCES>;
     
      private constructor(){
         this.client= createClient({
             url:process.env.REDIS_URL
         })
         this.client.connect();
-        
+        this.OrderBook={};
+        this.User_Balances={};
     }
 
      static getInstance(){
@@ -66,205 +69,192 @@ export class Manager{
         
         }
 
+        if(!response || !response?.eventId || !response?.payload){
+            throw new Error ( "Response either empty or not in correct Format");
+        }
+
+        await this.publishToAPI(response.eventId,response.payload)
+
+    }
+
+    resolveMarket(data:any){
+        const {marketId,winner}=data.payload;
+
+        if(!marketId || !this.OrderBook[marketId]){
+            return{
+                eventId:data.eventId,
+                payload:{
+                    message:"Market Id not defined or Not Available",
+                    success:false
+                }
+            }
+        }
+
+        // winner - will be side either YES or NO and then we iterate over the buy and sell table and add money to people balances 
+        // doing simple 10-price * quantity 
+
+
+        return {
+            eventId:data.eventId,
+            payload:{
+                message:"Market Resolved Successfully , gamblers are happy now",
+                success:true
+            }
+        }
     }
 
 
     async handleBuyOrder(data: Extract<SubscribeMessageType, {type:"BUY"}>){
-    //     const {userId,ticket_type,order_type,quantity,price,marketId}=data.payload;
+        const {userId,ticket_type,order_type,quantity,price,marketId}=data.payload;
 
-    //     if (!userId || !ticket_type || !order_type || !quantity || !price || !marketId) {
-    //   return {
-    //     eventId:data.eventId,
-    //     payload:{
-    //     message: "Missing required fields",
-    //     success: false,
-    //   }};
-    // }
-
-
-    //  if (quantity <= 0) {
-    //   return {
-    //     eventId:data.eventId,
-    //     payload:{
-    //     message: "Quantity must be positive",
-    //     success: false,
-    //   }}
-    // }
-
-    // if (price <= 0 || price > 10) {
-    //   return {
-    //     eventId:data.eventId,
-    //     payload:{
-    //     message: "Price must be between 0 and 10",
-    //     success: false,
-    //   }};
-    // }
-
-    //     // check balance 
-    //     const userExist=await prisma.user.findUnique({
-    //         where:{
-    //             id:userId
-    //         }
-    //     });
-
-    //     if(!userExist){
-    //         return {eventId:data.eventId,
-    //             payload:{
-    //             message:"User Doesn't Exist",
-    //             success:false
-    //         }}
-    //     }
-
-    //     if(userExist.balance<price*quantity*100){
-    //         return {eventId:data.eventId,
-    //             payload:{
-    //             message:"Insufficient Balances",
-    //             success:false
-    //         }}
-    //     }
-
-    //     const marketExist=await prisma.market.findUnique({
-    //         where:{
-    //             id:marketId
-    //         }
-    //     })
+        if (!userId || !ticket_type || !order_type || !quantity || !price || !marketId) {
+      return {
+        eventId:data.eventId,
+        payload:{
+        message: "Missing required fields",
+        success: false,
+      }};
+    }
 
 
-    //     if(!marketExist){
-    //         return {
-    //             eventId:data.eventId,
-    //             payload:{
-    //                 message:"market does not exist",
-    //                 success:false
-    //             }
-    //         }
-    //     }
-    //     const marketName=marketExist.name
-    //     const marketWatch:Market =this.OrderBook.marketName!
+     if (quantity <= 0) {
+      return {
+        eventId:data.eventId,
+        payload:{
+        message: "Quantity must be positive",
+        success: false,
+      }}
+    }
 
+    if (price <= 0 || price > 10) {
+      return {
+        eventId:data.eventId,
+        payload:{
+        message: "Price must be between 0 and 10",
+        success: false,
+      }};
+    }
+    const userExist = this.User_Balances[userId];
 
-    //     const counterSide=order_type==="BUY" ? marketWatch[ticket_type]["SELL"] : marketExist[ticket_type]["BUY"]
-
-
-    //     let remainingQuantity=quantity;
-    //     let filledQuantity=0;
-    //     const fills=[];
-
-    //     counterSide.priceLevels.sort((a:any,b:any)=>{
-    //         return order_type==="BUY"?
-    //         a.price-b.price
-    //         : b.price-a.price
-    //     })
-
-
-    //     for(let i=0;i<counterSide.priceLevels.length && remainingQuantity>0 ; i++){
-
-    //         const priceLevel = counterSide.priceLevels[i];
-
-    //     const isPriceAcceptable= order_type==="BUY"?
-    //     priceLevel.price<=price :
-    //     priceLevel.price >= price;
-
-
-
-    //                 if(!isPriceAcceptable){
-    //                     continue;
-    //                 }
-
-    //                 const orders=priceLevel.orders;
-    //                 let priceLevelFillQuantity = 0;
-
-
-    //                 for(let j=0;j<orders.length && remainingQuantity>0;j++){
-    //                     const order =orders[j];
-
-    //                     if(order.stock_quantity<=remainingQuantity){
-    //                         const fillAmount=order.stock_quantity;
-    //                         remainingQuantity-=fillAmount;
-    //                         filledQuantity+=fillAmount;
-    //                         priceLevelFillQuantity+=fillAmount;
-    //                         orders.splice(j,1);
-    //                         j--;
-    //                     }else{
-    //                         order.stock_quantity-=remainingQuantity;
-    //                         filledQuantity+=remainingQuantity;
-    //                         priceLevelFillQuantity+=remainingQuantity;
-    //                         remainingQuantity=0;
-    //                     }
-    //                 }
-
-    //                 if(priceLevelFillQuantity>0){
-    //                     priceLevel.totalOty -=priceLevelFillQuantity;
-    //                     counterSide.totalQty-=priceLevelFillQuantity;
-
-    //                     fills.push({
-    //                         price:priceLevel.price,
-    //                         quantity:priceLevelFillQuantity
-    //                     })
-    //                 }
-
-    //                 if(priceLevel.totalQty===0){
-    //                     counterSide.priceLevels.splice(i,1);
-    //                     i--;
-    //                 }
-
-    //     }
-
-    //     if(remainingQuantity>0){
-    //         const orderSide= this.OrderBook[marketName]![ticket_type][order_type];
-
-    //         let priceLevel = orderSide.priceLevels.find(
-    //             (level)=>level.price===price
-    //         )
-
-    //         if(!priceLevel){
-    //             priceLevel={
-    //                 price,
-    //                 totalQty:0,
-    //                 orders:[],
-
-    //             }
-
-    //             orderSide.priceLevels.push(priceLevel);
-
-    //             orderSide.priceLevels.sort((a,b)=>{
-    //                 return order_type==="BUY"?
-    //                 b.price-a.price:
-    //                 a.price-b.price
-    //             })
-
-    //         }
-
-    //         priceLevel.orders.push({
-    //             userId,
-    //             stock_quantity:remainingQuantity
-    //         })
-
-    //         priceLevel.totalQty+=remainingQuantity
-    //         orderSide.totalQty+=remainingQuantity
-
-    //     }
-
-    //     return {
-    //         eventId:data.eventId,
-    //         payload:{
-    //              message:
-    //     filledQuantity > 0
-    //       ? `Limit order partially filled: ${filledQuantity} filled, ${remainingQuantity} placed on book`
-    //       : `Limit order placed on book: ${remainingQuantity} units at ${price}`,
-    //   success: true,
-    //   filledQuantity,
-    //   remainingQuantity,
-    //   fills,
-    //         }
-    //     }
+    if(!userExist){
+        return {
+            eventId:data.eventId,
+            payload:{
+                message:"User Does not Exist",
+                status:false
+            }
+        }
+    }
 
 
 
 
+        if(userExist.balance<price*quantity*100){
+            return {
+                eventId:data.eventId,
+                payload:{
+                message:"Insufficient Balances",
+                success:false
+            }}
+        }
 
 
 
+        const marketExist=this.OrderBook[marketId];
+
+
+        if(!marketExist){
+            return {
+                eventId:data.eventId,
+                payload:{
+                    message:"market does not exist",
+                    success:false
+                }
+            }
+        }
+
+
+        const counterSide=marketExist[ticket_type]["SELL"]
+
+
+        let remainingQuantity=quantity;
+        let filledQuantity=0;
+        const fills=[];
+
+        const PriceKeys = Object.keys(counterSide.priceLevels).map(Number);
+
+        PriceKeys.sort((a,b)=>a-b)
+
+
+        for(let priceLevel of PriceKeys){
+        const isPriceAcceptable= priceLevel<=price 
+                    if(isPriceAcceptable){
+                        
+                        const priceLevelDetail=counterSide.priceLevels[priceLevel]!
+
+                        const orders = priceLevelDetail?.orders;
+
+                        while(orders.length && remainingQuantity>0){
+                            const currOrder=orders[0]!;
+                            const filled = Math.min(currOrder.stock_quantity,remainingQuantity);
+                             
+                            fills.push({
+                                price:priceLevel,
+                                quantity:filled
+                            })
+
+                            remainingQuantity-=filled
+                            currOrder.stock_quantity-=filled
+                            filledQuantity+=filled
+
+                            if(currOrder.stock_quantity==0){
+                                orders.shift()
+                            }
+
+                            priceLevelDetail.totalQty-=filled
+                            counterSide.totalQty-=filled
+                            
+
+                        }
+
+
+                    }else{
+                        break;
+                    }
+                }
+
+                 if(remainingQuantity>0){
+                            // make entry to that price
+                            const buyside = marketExist[ticket_type]["BUY"];
+                            
+                            if(!buyside.priceLevels[price]){
+                                buyside.priceLevels[price] = {
+                                    totalQty: 0,
+                                    orders: []
+                                    };
+                            }
+
+                            buyside.priceLevels[price].orders.push({
+                                userId,
+                                stock_quantity:remainingQuantity
+                            })
+
+                            buyside.totalQty+=remainingQuantity
+                            buyside.priceLevels[price].totalQty+=remainingQuantity
+                        }
+
+                
+
+        return {
+  eventId: data.eventId,
+  payload: {
+    message,
+    success: true,
+    filledQuantity,
+    remainingQuantity,
+    fills,
+  }
+};
 
 
     }
@@ -276,19 +266,19 @@ export class Manager{
 
     createNewMarket(data: Extract<SubscribeMessageType, { type: "CREATE_MARKET" }>){
 
-        const {marketName}=data.payload;
+        const {marketId}=data.payload;
 
-        if(!marketName){
+        if(!marketId){
             return {
                 eventId:data.eventId,
                 payload:{
-                    message:"Invalid Market Name",
+                    message:"Missing MarkerId",
                     status:false
                 }
             }
         }
         try {
-           if (this.OrderBook!.marketName){
+           if (this.OrderBook[marketId]){
             return {
                 eventId:data.eventId,
                 payload:{
@@ -299,32 +289,118 @@ export class Manager{
            }
 
 
-           this.OrderBook.marketName={
-                YES: {
-                    BUY: {
-                    totalQty: 0,
-                    priceLevels: [],
-                    },
-                    SELL: {
-                    totalQty: 0,
-                    priceLevels: [],
-                    },
-                },
-                NO: {
-                    BUY: {
-                    totalQty: 0,
-                    priceLevels: [],
-                    },
-                    SELL: {
-                    totalQty: 0,
-                    priceLevels: [],
-                    },
-                },
-                };
+           this.OrderBook.marketName = {
+             YES: {
+               BUY: {
+                 totalQty: 100,
+                 priceLevels: {
+                   "5": {
+                     totalQty: 100,
+                     orders: [
+                       {
+                         userId: "ADMIN",
+                         stock_quantity: 100,
+                       },
+                     ],
+                   },
+                 },
+               },
+               SELL: {
+                 totalQty: 100,
+                 priceLevels: {
+                   "5": {
+                     totalQty: 100,
+                     orders: [
+                       {
+                         userId: "ADMIN",
+                         stock_quantity: 100,
+                       },
+                     ],
+                   },
+                 },
+               },
+             },
+             NO: {
+               BUY: {
+                 totalQty: 100,
+                 priceLevels: {
+                   "5": {
+                     totalQty: 100,
+                     orders: [
+                       {
+                         userId: "ADMIN",
+                         stock_quantity: 100,
+                       },
+                     ],
+                   },
+                 },
+               },
+               SELL: {
+                 totalQty: 100,
+                 priceLevels: {
+                   "5": {
+                     totalQty: 100,
+                     orders: [
+                       {
+                         userId: "ADMIN",
+                         stock_quantity: 100,
+                       },
+                     ],
+                   },
+                 },
+               },
+             },
+           };
+
+           return {
+            eventId:data.eventId,
+            payload:{
+                message:"Created and populated the new market in the orderbook",
+                success:true
+            }
+           }
+
+
             
         } catch (error) {
-            console.log("Error in creating new Market "+error)
+            console.log("Error in creating new Market "+error);
+            return{
+                eventId:data.eventId,
+                payload:{
+                    message:"Error in creating new market",
+                    success:false
+                }
+            }
         }
+    }
+
+
+
+    getMarketOrderBook(data:Extract<SubscribeMessageType,{type:"GET_MARKET_ORDERBOOK"}>){
+        const {marketId} = data.payload;
+
+        
+        if(!marketId || !this.OrderBook[marketId]){
+            return {
+                eventId:data.eventId,
+                payload:{
+                    message:"Invalid Market Name",
+                    status:false
+                }
+            }
+        }
+
+        return {
+            eventId:data.eventId,
+            payload:{
+                mmessage:"Here the OrderBook you asked master",
+                status:false,
+                data:this.OrderBook[marketId]
+            }
+        }
+
+
+
     }
 
     

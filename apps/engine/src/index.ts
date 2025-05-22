@@ -2,6 +2,7 @@ import e from 'express'
 import cors from 'cors'
 import orderRoute from './routes/order.route';
 import { Manager } from './redis/index';
+import { redis } from 'bun';
 
 
 const app=e();
@@ -17,7 +18,11 @@ app.use("/api/v1/order",orderRoute);
 
 const redisInstance =Manager.getInstance();
 
-redisInstance.subscribeToOrders();
+redisInstance.listenForOrders().catch((err)=>{
+    console.log("Error in listening for orders ");
+})
+
+
 
 
 app.get("/",(req,res)=>{

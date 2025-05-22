@@ -2,7 +2,7 @@ import { RedisManager } from "@/app/redis";
 import { LimitOrderRequest, LimitOrderSchema } from "@repo/common";
 import { prisma } from "@repo/db/client";
 import { NextResponse } from "next/server";
-import { useId } from "react";
+
 export const POST=async(req:Request)=>{
     try {
         const body=await req.json()
@@ -19,37 +19,24 @@ export const POST=async(req:Request)=>{
         const redisInstance = RedisManager.getInstance()
         const {userId,ticket_type,order_type,quantity,price,marketId}:LimitOrderRequest=body;
 
-        const marketExist = await prisma.market.findUnique({
-            where:{
-                id:marketId
-            }
-        })
+        // const checkUserExist= await prisma.user.findUnique({
+        //     where:{
+        //         id:userId
+        //     }
+        // })
 
+        // if(!checkUserExist){
+        //     return NextResponse.json({
+        //         message:"UserId doesn't exist in the database",
+        //         status:false
+        //     })
+        // }
 
-        if(!marketExist){
-            return NextResponse.json({
-                message:"Invalid Market Id",
-                status:false
-            })
-        }
-        const checkUserExist= await prisma.user.findUnique({
-            where:{
-                id:userId
-            }
-        })
-
-        if(!checkUserExist){
-            return NextResponse.json({
-                message:"UserId doesn't exist in the database",
-                status:false
-            })
-        }
-
-        if(checkUserExist.balance<=quantity*price*100){
-            return NextResponse.json({
-                message:"Not Suffiecient Balance"
-            });
-        }
+        // if(checkUserExist.balance<=quantity*price*100){
+        //     return NextResponse.json({
+        //         message:"Not Suffiecient Balance"
+        //     });
+        // }
 
         const eventId:string=await redisInstance.pushToEngine({
             userId,

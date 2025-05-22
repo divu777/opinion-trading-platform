@@ -107,15 +107,15 @@ export type StartMarketType=z.infer<typeof StartMarketSchema>
 
 export type SubscribeMessageType=
 {
-  type:"buy",
+  type:"BUY",
   eventId:string,
   payload: LimitOrderRequest
 } | {
-  type:"sell",
+  type:"SELL",
   eventId:string,
   payload: LimitOrderRequest
 } | {
-  type:"createMarket",
+  type:"CREATE_MARKET",
   eventId:string,
   payload:StartMarketType
 }

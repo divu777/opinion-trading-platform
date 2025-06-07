@@ -1,12 +1,9 @@
-import { prisma } from '@repo/db/client';
 import { createClient } from "@redis/client";
 import type { RedisClientType } from "redis";
-import type { Market, SubscribeMessageType,OrderBookSystem } from '@repo/common';
-import { collapseTextChangeRangesAcrossMultipleVersions } from 'typescript';
+import type {  SubscribeMessageType,OrderBookSystem } from '@repo/common';
 
 type BALANCES={
     balance:number,
-    locked:number
 }
 
 type Stock_balance={
@@ -24,17 +21,7 @@ export class Manager {
   private static instance: Manager;
   private OrderBook: OrderBookSystem;
   private User_Balances: Record<string, BALANCES>;
-  private Stock_Balances: Stock_balance={
-    "user1": {
-      "MI_VS_RCB":{
-        "YES":10,
-      },
-      "DC_VS_LSG":{
-        "NO":60,
-      }
-    }
-  }// basically making this for quick lookups if the user have that specific stock or not wehn sent a selling order req
-    // { userId : "MI_VS_RCB" : "YES" : "10"  }
+  private Stock_Balances: Stock_balance;
   private constructor() {
     this.client = createClient({
       url: process.env.REDIS_URL,
@@ -42,6 +29,17 @@ export class Manager {
     this.client.connect();
     this.OrderBook = {};
     this.User_Balances = {};
+    this.Stock_Balances= {};
+    this.populateAdminBalance();
+  }
+
+  populateAdminBalance(){
+    this.User_Balances = {
+      "ADMIN":{
+        balance:20000000
+      }
+    }
+    console.log("admin balance added");
   }
 
   static getInstance() {
@@ -129,8 +127,6 @@ export class Manager {
     };
   }
 
-  // also have to uk do the exchange between the parties who the user is buying from and someone selling in balances , stock_balance 
-  // right now order book is good but that 2 gloabls are not great 
 
   async handleBuyOrder(data: Extract<SubscribeMessageType, { type: "BUY" }>) {
     const { userId, ticket_type, order_type, quantity, price, marketId } =
@@ -163,7 +159,7 @@ export class Manager {
       };
     }
 
-    if (price <= 0 || price > 10) {
+    if (price < 0.5 || price > 9.5) {
       return {
         eventId: data.eventId,
         payload: {
@@ -283,7 +279,10 @@ export class Manager {
 
           if(this.Stock_Balances[currOrder.userId]![marketId]![ticket_type]===0){
             delete this.Stock_Balances[currOrder.userId]![marketId]![ticket_type]
+          }
 
+          if(Object.keys(this.Stock_Balances[currOrder.userId]![marketId]!).length==0){
+            delete this.Stock_Balances[currOrder.userId]![marketId]
           }
 
           const totalCost = priceLevel * filled * 100 
@@ -690,8 +689,7 @@ export class Manager {
     }
 
     this.User_Balances[userId]={
-      balance:20,
-      locked:0
+      balance:2000
     }
 
     this.Stock_Balances[userId]={}
@@ -739,7 +737,6 @@ export class Manager {
         message:"Feteched user balances successfully",
         success:true,
         balance:userExist.balance,
-        locked:userExist.locked
       }
     }
   }

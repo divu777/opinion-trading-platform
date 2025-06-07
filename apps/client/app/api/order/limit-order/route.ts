@@ -17,18 +17,10 @@ export const POST=async(req:Request)=>{
         
         }
         const redisInstance = RedisManager.getInstance()
-        const {userId,ticket_type,order_type,quantity,price,marketId}:LimitOrderRequest=body;
 
-        const eventId:string=await redisInstance.pushToEngine({
-            userId,
-            ticket_type,
-            order_type,
-            quantity,
-            price,
-            marketId
-        });
+        const eventId:string=await redisInstance.pushToEngine(body);
 
-        const response = await redisInstance.subscibeToEvent(eventId);
+        const response = await redisInstance.subscribeToEvent(eventId);
         return NextResponse.json(response);
     } catch (error) {
         console.log(error + " Error in sending Post Request. ");

@@ -2,11 +2,10 @@ import e from 'express'
 import cors from 'cors'
 import orderRoute from './routes/order.route';
 import { Manager } from './redis/index';
-import { redis } from 'bun';
 
 
 const app=e();
-const PORT = process.env.PORT ?? 8080
+const PORT = process.env.PORT ?? 8085
 console.log( typeof PORT)
 app.use(e.json());
 app.use(cors());

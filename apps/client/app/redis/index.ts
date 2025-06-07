@@ -1,5 +1,5 @@
 import { createClient } from "@redis/client";
-import { LimitOrderRequest, MarketOrderRequest, SubscribeMessageType } from "@repo/common";
+import { LimitOrderRequest } from "@repo/common";
 import { randomUUID } from "crypto";
 import type { RedisClientType } from "redis";
 
@@ -31,7 +31,7 @@ export class RedisManager {
         return uniqueId;
   }
 
-  subscibeToEvent(eventName: string):Promise<any> {
+  subscribeToEvent(eventName: string):Promise<any> {
     return new Promise((resolve,reject)=>{
         this.client.subscribe(eventName, (message) => {
       const data = JSON.parse(message);

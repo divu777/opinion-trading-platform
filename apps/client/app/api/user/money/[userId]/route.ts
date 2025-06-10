@@ -13,7 +13,7 @@ export async function GET(_:NextRequest,{params}:{params:Promise<{userId:string}
 
     const redisclient = RedisManager.getInstance()
 
-    const eventId = await redisclient.pushToEngine({userId},"GET_USER_STOCK_BALANCE");
+    const eventId = await redisclient.pushToEngine({userId},"GET_USER_BALANCE");
 
     const response = await redisclient.subscribeToEvent(eventId);
     return NextResponse.json(response)

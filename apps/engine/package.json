@@ -9,6 +9,9 @@
   "peerDependencies": {
     "typescript": "^5"
   },
+  "scripts": {
+    "dev":"bun src/index.ts"
+  },
   "dependencies": {
     "@repo/common": "*",
     "@types/cors": "^2.8.17",

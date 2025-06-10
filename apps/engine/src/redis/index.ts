@@ -672,16 +672,6 @@ export class Manager {
     };
   }
 
-// should be implemented to create entries in the user_Balances with default money and also entry in the stock 
-
-/* what we will do is in nextjs we do is create user entry in the db and get the id from there that we pass it here - then it won't be any issue
- but tbh it will be an issue for example what if the main backend goes down now we have the user in db but we never popped it out from the queue 
- even if in the V2 we add the redis for RDS and AOF for recovery mechanism
-
- 29/05/25
- also rememeber when adding queue in main engine to store it in db rather than in the nextjs layer , make the queue acknowledge one basically have the 
- logic of retrying - learnt in 22 week cohort 
-*/
   createNewUser(data:Extract<SubscribeMessageType,{type:"CREATE_USER"}>){
     const { userId } = data.payload;
     if(!userId){
@@ -716,7 +706,7 @@ export class Manager {
     payload:{
       message:"User created successfully",
       success:true,
-      balance:this.User_Balances[userId]
+      balance:this.User_Balances[userId].balance/100
     }
   }
 
@@ -726,7 +716,7 @@ export class Manager {
   getUserBalance(data:Extract<SubscribeMessageType,{type:"GET_USER_BALANCE"}>){
 
     const {userId} = data.payload;
-
+console.log("hhrrprice ")
     if(!userId){
       return{
         eventId:data.eventId,
@@ -754,7 +744,7 @@ export class Manager {
       payload:{
         message:"Feteched user balances successfully",
         success:true,
-        balance:userExist.balance,
+        balance:userExist.balance/100,
       }
     }
   }

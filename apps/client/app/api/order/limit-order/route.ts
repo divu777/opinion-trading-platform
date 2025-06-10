@@ -1,6 +1,6 @@
 import { RedisManager } from "@/app/redis";
-import { LimitOrderRequest, LimitOrderSchema } from "@repo/common";
-import { prisma } from "@repo/db/client";
+import {  LimitOrderSchema } from "@repo/common";
+
 import { NextResponse } from "next/server";
 
 export const POST=async(req:Request)=>{

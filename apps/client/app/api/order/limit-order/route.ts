@@ -18,7 +18,7 @@ export const POST=async(req:Request)=>{
         }
         const redisInstance = RedisManager.getInstance()
 
-        const eventId:string=await redisInstance.pushToEngine(body);
+        const eventId:string=await redisInstance.pushToEngine(body,String(body.order_type));
 
         const response = await redisInstance.subscribeToEvent(eventId);
         return NextResponse.json(response);

@@ -21,20 +21,30 @@ export class RedisManager {
     return RedisManager.instance;
   }
 
-  async pushToEngine(data: LimitOrderRequest):Promise<string> {
+  async pushToEngine(data: any, type:string):Promise<string> {
         const uniqueId = randomUUID();
         await this.client.lPush(
           "order.queue",
-          JSON.stringify({ type:data.order_type,eventId: uniqueId,  payload:data})
+          JSON.stringify({ type,eventId: uniqueId,  payload:data})
         );
         console.log("pushed to engine")
         return uniqueId;
   }
 
   subscribeToEvent(eventName: string):Promise<any> {
+
     return new Promise((resolve,reject)=>{
-        this.client.subscribe(eventName, (message) => {
+       const timeout = setTimeout(() => {
+        this.client.unsubscribe(eventName);
+        reject({message:"no response"});
+      }, 5000)
+
+
+      this.client.subscribe(eventName, (message) => {
+            clearTimeout(timeout);
       const data = JSON.parse(message);
+                  console.log(data)
+
       this.client.unsubscribe(eventName);
       resolve(data)
     });

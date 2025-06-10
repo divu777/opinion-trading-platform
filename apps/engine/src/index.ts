@@ -18,7 +18,7 @@ app.use("/api/v1/order",orderRoute);
 const redisInstance =Manager.getInstance();
 
 redisInstance.listenForOrders().catch((err)=>{
-    console.log("Error in listening for orders ");
+    console.log("Error in listening for orders " + err);
 })
 
 

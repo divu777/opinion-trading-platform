@@ -1,13 +1,5 @@
 import z from "zod"
 
-type Balances = Record<string, number>;
-
-interface User {
-  id: string;
-  balance: number;
-  stocks: Balances;
-}
-
 // order book
 type SingleOrder = {
   userId: string;
@@ -60,6 +52,7 @@ export const LimitOrderSchema = z.object({
     .max(9.5, { message: "Invalid Price" }),
   marketId: z.string({ message: "Event Id not specificed" }),
 });
+
 
 
 export const StartMarketSchema = z.object({

@@ -39,6 +39,8 @@ export class Manager {
         balance:20000000
       }
     }
+
+
     console.log("admin balance added");
   }
 
@@ -52,8 +54,8 @@ export class Manager {
   async listenForOrders() {
     while (true) {
       const message = await this.client.brPop("order.queue", 0);
-      console.log(message);
-      const data: SubscribeMessageType = JSON.parse(message!.element);
+      const data: any = JSON.parse(message!.element);
+      console.log(message?.element + " maarro dikro")
       await this.ManageOrderRecieved(data);
     }
   }
@@ -72,6 +74,10 @@ export class Manager {
 
       case "CREATE_MARKET":
         response = await this.createNewMarket(data);
+        break;
+
+      case "GET_MARKET_ORDERBOOK":
+        response = await this.getMarketOrderBook(data);
         break;
 
       case "CREATE_USER":
@@ -243,11 +249,12 @@ export class Manager {
             this.Stock_Balances[userId][marketId] = { [ticket_type]: 0 };
           }
 
+          console.log(currOrder.userId)
           if (!this.Stock_Balances[currOrder.userId]) {
             return {
               eventId: data.eventId,
               payload: {
-                message: "Critical error: Seller not found in stock balances",
+                message: "Critical error1: Seller not found in stock balances",
                 success: false,
               },
             };
@@ -257,7 +264,7 @@ export class Manager {
             return {
               eventId: data.eventId,
               payload: {
-                message: "Critical error: Seller has no stock record for this market",
+                message: "Critical error2: Seller has no stock record for this market",
                 success: false,
               },
             };
@@ -267,7 +274,7 @@ export class Manager {
             return {
               eventId: data.eventId,
               payload: {
-                message: "Critical error: Seller doesn't have enough stock to fulfill order",
+                message: "Critical error3: Seller doesn't have enough stock to fulfill order",
                 success: false,
               },
             };
@@ -348,7 +355,7 @@ export class Manager {
 
   async handleSellOrder(data: Extract<SubscribeMessageType, { type: "SELL" }>) {
     const { userId, ticket_type, order_type, quantity, price, marketId } = data.payload;
-
+    console.log("seeee")
     if(!userId || !ticket_type || !order_type || !quantity || !price || !marketId){
       return{
         eventId:data.eventId,
@@ -527,6 +534,8 @@ export class Manager {
   ) {
     const { marketId } = data.payload;
 
+    console.log(JSON.stringify(this.OrderBook))
+
     if (!marketId) {
       return {
         eventId: data.eventId,
@@ -547,7 +556,7 @@ export class Manager {
         };
       }
 
-      this.OrderBook.marketName = {
+      this.OrderBook[marketId] = {
         YES: {
           BUY: {
             totalQty: 100,
@@ -610,6 +619,15 @@ export class Manager {
         },
       };
 
+      this.Stock_Balances = {
+      "ADMIN":{
+        [marketId]:{
+          "YES":100,
+          "NO":100
+        }
+      }
+    }
+
       return {
         eventId: data.eventId,
         payload: {
@@ -666,7 +684,6 @@ export class Manager {
 */
   createNewUser(data:Extract<SubscribeMessageType,{type:"CREATE_USER"}>){
     const { userId } = data.payload;
-
     if(!userId){
       return{
         eventId:data.eventId,
@@ -698,7 +715,8 @@ export class Manager {
     eventId:data.eventId,
     payload:{
       message:"User created successfully",
-      success:true
+      success:true,
+      balance:this.User_Balances[userId]
     }
   }
 
@@ -743,7 +761,7 @@ export class Manager {
 
   getUserStockBalance(data:Extract<SubscribeMessageType,{type:"GET_USER_STOCK_BALANCE"}>){
     const {userId} = data.payload;
-
+    console.log("reeacheed "+userId)
     if(!userId){
       return {
         eventId:data.eventId,
@@ -759,7 +777,7 @@ export class Manager {
     if(!userExist){
       return {
         eventId:data.eventId,
-        paylaod:{
+        payload:{
           message:"User not found with this user Id "+userId,
           success:false
         }

@@ -4,8 +4,8 @@ import { NextRequest, NextResponse } from "next/server"
 
 export const POST=async(req:NextRequest)=>{
     const body = await req.json()
-
-    const validInput =  CreateNewUserSchema.safeParse(body);
+    console.log(body);
+    const validInput =  CreateNewUserSchema.safeParse(body.data);
 
     if(!validInput.success){
         return NextResponse.json({
@@ -16,7 +16,7 @@ export const POST=async(req:NextRequest)=>{
 
     const redisClient = RedisManager.getInstance();
 
-    const eventId = await redisClient.pushToEngine(body,
+    const eventId = await redisClient.pushToEngine(body.data,
         "CREATE_USER"
     );
     const response = await redisClient.subscribeToEvent(eventId);

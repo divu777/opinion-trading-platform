@@ -105,6 +105,7 @@ export class Manager {
   }
 
   async publishToAPI(eventName: string, message: any) {
+    console.log(JSON.stringify(message)+" ---->")
     await this.client.publish(eventName, JSON.stringify(message));
   }
 

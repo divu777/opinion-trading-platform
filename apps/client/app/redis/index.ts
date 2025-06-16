@@ -43,7 +43,6 @@ export class RedisManager {
       this.client.subscribe(eventName, (message) => {
             clearTimeout(timeout);
       const data = JSON.parse(message);
-                  console.log(data)
 
       this.client.unsubscribe(eventName);
       resolve(data)

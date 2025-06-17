@@ -83,6 +83,10 @@ export class Manager {
       case "CREATE_USER":
         response =  this.createNewUser(data);
         break;
+      
+      case "GET_ALL_MARKETS":
+        response = this.getAllMarkets(data);
+        break;
 
       case "GET_USER_BALANCE":
         response =  this.getUserBalance(data);
@@ -132,6 +136,28 @@ export class Manager {
         success: true,
       },
     };
+  }
+
+  getAllMarkets(data:Extract<SubscribeMessageType,{type:"GET_ALL_MARKETS"}>){
+    const markets  = Object.keys(this.OrderBook)
+
+    if(!markets){
+      return{
+        eventId:data.eventId,
+        payload:{
+          message:"No markets exist for no check for it later",
+          markets : []
+        }
+      }
+    }
+
+    return{
+      eventId:data.eventId,
+      payload:{
+        message:"Fetch all markets",
+        markets
+      }
+    }
   }
 
 

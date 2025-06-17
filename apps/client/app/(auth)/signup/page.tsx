@@ -15,7 +15,7 @@ const Page = () => {
             });
             console.log(response.data.success+"----->");
             if(response.data.success){
-                router.push("/dashboard")
+                router.push("/markets")
             }
         }
   return (

@@ -117,6 +117,11 @@ export type SubscribeMessageType =
     eventId:string,
     payload: GetUserStockBalance
   }
+   | {
+    type :"GET_ALL_MARKETS",
+    eventId:string,
+    payload:{}
+   }
 
 
 

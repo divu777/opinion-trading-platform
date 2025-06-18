@@ -19,3 +19,10 @@ const MarketCard = ({market}:{market:string}) => {
 }
 
 export default MarketCard
+
+
+/*
+
+new things you should work is the web socket logic from the backend i think mostly fetch first the order book and then subscribe to the 
+events of that particular markets and show case changes in the UI this is the tricky part now 
+*/

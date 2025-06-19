@@ -125,3 +125,23 @@ export type SubscribeMessageType =
 
 
 
+
+   export type MessageRecieved =
+  | {
+      type: "SUBSCRIBE_MARKET";
+      payload: {
+        marketId: string;
+      };
+    }
+  | {
+      type: "UNSUBSCRIBE_MARKET";
+      payload: {
+        marketId: string;
+      };
+    } | {
+        type: 'MARKET_UPDATE',
+        payload:{
+          marketId:string,
+            orderBook:any
+        }
+    };

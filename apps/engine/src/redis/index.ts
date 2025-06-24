@@ -1,6 +1,6 @@
 import { createClient } from "@redis/client";
 import type { RedisClientType } from "redis";
-import type {  SubscribeMessageType,OrderBookSystem } from '@repo/common';
+import type { PriceLevel, SubscribeMessageType,OrderBookSystem } from '@repo/common';
 
 type BALANCES={
     balance:number,
@@ -689,12 +689,29 @@ export class Manager {
       };
     }
 
+    const sellsideYes: any = {...this.OrderBook[marketId].YES.SELL.priceLevels}
+    const sellsideNo:any = {...this.OrderBook[marketId].NO.SELL.priceLevels }
+
+
+  function cleanOrderbook(priceLevels:Record<number,PriceLevel>):any{
+    return Object.entries(priceLevels).map(([price,data])=>(
+      {
+        price:price,
+        totalQty:data.totalQty
+      }
+    )).slice(0,5);
+  }
+    
+
     return {
       eventId: data.eventId,
       payload: {
         mmessage: "Here the OrderBook you asked master",
         status: false,
-        data: this.OrderBook[marketId],
+        data: {
+              "Yes": cleanOrderbook(sellsideYes),
+      "No": cleanOrderbook(sellsideNo)
+        }
       },
     };
   }

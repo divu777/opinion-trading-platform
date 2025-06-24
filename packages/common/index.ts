@@ -6,7 +6,7 @@ type SingleOrder = {
   stock_quantity: number;
 };
 
-type PriceLevel = {
+export type PriceLevel = {
   totalQty: number;
   orders: SingleOrder[];
 };
@@ -144,4 +144,9 @@ export type SubscribeMessageType =
           marketId:string,
             orderBook:any
         }
+    } | { 
+      type : "NEW_MARKET",
+      payload: {
+        marketId:string
+      }
     };

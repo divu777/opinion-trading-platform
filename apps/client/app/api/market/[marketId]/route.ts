@@ -1,4 +1,4 @@
-import { RedisManager } from "@/app/redis";
+import { RedisManager } from "@/lib/redis";
 import { StartMarketSchema } from "@repo/common";
 import { NextRequest, NextResponse } from "next/server";
 

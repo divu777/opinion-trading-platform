@@ -1,4 +1,4 @@
-import { RedisManager } from "@/app/redis";
+import { RedisManager } from "@/lib/redis";
 import { NextRequest, NextResponse } from "next/server";
 
 export const  GET = async(_:NextRequest)=>{

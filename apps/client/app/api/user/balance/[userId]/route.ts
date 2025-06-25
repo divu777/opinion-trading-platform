@@ -1,4 +1,4 @@
-import { RedisManager } from "@/app/redis";
+import { RedisManager } from "@/lib/redis";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(_:NextRequest,{params}:{params:Promise<{userId:string}>}){

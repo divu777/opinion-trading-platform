@@ -830,6 +830,11 @@ console.log("hhrrprice ")
 
   }
 
+
+  sendMarketToSocket(){
+    
+  }
+
 }
 
 

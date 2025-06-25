@@ -1,4 +1,4 @@
-import { RedisManager } from "@/app/redis";
+import { RedisManager } from "@/lib/redis";
 import {  LimitOrderSchema } from "@repo/common";
 
 import { NextResponse } from "next/server";

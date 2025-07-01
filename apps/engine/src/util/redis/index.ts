@@ -22,6 +22,7 @@ export class Manager {
   private OrderBook: OrderBookSystem;
   private User_Balances: Record<string, BALANCES>;
   private Stock_Balances: Stock_balance;
+  private websocket: WebSocket;
   private constructor() {
     this.client = createClient({
       url: process.env.REDIS_URL,
@@ -30,6 +31,7 @@ export class Manager {
     this.OrderBook = {};
     this.User_Balances = {};
     this.Stock_Balances= {};
+    this.websocket=new WebSocket("ws://localhost:4000")
     this.populateAdminBalance();
   }
 
@@ -42,6 +44,23 @@ export class Manager {
 
 
     console.log("admin balance added");
+  }
+  sendSocket(data:any){
+    if(this.websocket.readyState===WebSocket.OPEN){
+
+      this.websocket.send(JSON.stringify(data));
+      return
+    }else if (this.websocket.readyState===WebSocket.CONNECTING){
+      const sendMsg = ()=>{
+        this.websocket.send(JSON.stringify(data));
+        this.websocket.removeEventListener('open',sendMsg)
+      }
+
+      this.websocket.addEventListener('open',sendMsg)
+
+    }else{
+      console.log("errror in websocket")
+    }
   }
 
   static getInstance() {
@@ -368,6 +387,18 @@ export class Manager {
       buyside.priceLevels[price].totalQty += remainingQuantity;
     }
 
+
+    const sellsideYes: any = {...this.OrderBook[marketId]!.YES.SELL.priceLevels}
+    const sellsideNo:any = {...this.OrderBook[marketId]!.NO.SELL.priceLevels }
+    
+    this.sendSocket({"type":"MARKET_UPDATE","payload":{
+      "marketId":marketId,
+      "orderBook":{
+        "Yes": cleanOrderbook(sellsideYes),
+        "No": cleanOrderbook(sellsideNo)
+      }
+    }})
+
     return {
       eventId: data.eventId,
       payload: {
@@ -538,6 +569,17 @@ export class Manager {
 
     }
 
+    const sellsideYes: any = {...this.OrderBook[marketId]!.YES.SELL.priceLevels}
+    const sellsideNo:any = {...this.OrderBook[marketId]!.NO.SELL.priceLevels }
+    
+    this.sendSocket({"type":"MARKET_UPDATE","payload":{
+      "marketId":marketId,
+      "orderBook":{
+        "Yes": cleanOrderbook(sellsideYes),
+        "No": cleanOrderbook(sellsideNo)
+      }
+    }})
+
 
     return {
       eventId:data.eventId,
@@ -655,6 +697,10 @@ export class Manager {
       }
     }
 
+    this.sendSocket({"type":"NEW_MARKET","payload":{
+      "marketId":marketId
+    }})
+
       return {
         eventId: data.eventId,
         payload: {
@@ -693,24 +739,17 @@ export class Manager {
     const sellsideNo:any = {...this.OrderBook[marketId].NO.SELL.priceLevels }
 
 
-  function cleanOrderbook(priceLevels:Record<number,PriceLevel>):any{
-    return Object.entries(priceLevels).map(([price,data])=>(
-      {
-        price:price,
-        totalQty:data.totalQty
-      }
-    )).slice(0,5);
-  }
+  
     
 
     return {
       eventId: data.eventId,
       payload: {
-        mmessage: "Here the OrderBook you asked master",
-        status: false,
+        message: "Here the OrderBook you asked master",
+        status: true,
         data: {
               "Yes": cleanOrderbook(sellsideYes),
-      "No": cleanOrderbook(sellsideNo)
+              "No": cleanOrderbook(sellsideNo)
         }
       },
     };
@@ -836,5 +875,12 @@ console.log("hhrrprice ")
   }
 
 }
-
+function cleanOrderbook(priceLevels:Record<number,PriceLevel>):any{
+    return Object.entries(priceLevels).map(([price,data])=>(
+      {
+        price:price,
+        totalQty:data.totalQty
+      }
+    )).slice(0,5);
+  }
 

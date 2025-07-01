@@ -1,7 +1,7 @@
 import e from 'express'
 import cors from 'cors'
 import orderRoute from './routes/order.route';
-import { Manager } from './redis/index';
+import { Manager } from './util/redis/index';
 
 
 const app=e();
@@ -20,6 +20,8 @@ const redisInstance =Manager.getInstance();
 redisInstance.listenForOrders().catch((err)=>{
     console.log("Error in listening for orders " + err);
 })
+
+
 
 
 

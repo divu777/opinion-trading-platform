@@ -1,6 +1,6 @@
 'use client'
 import { useSocket } from '@/lib/socket/useSocket';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface Order {
   price: string;
@@ -13,25 +13,41 @@ interface MarketData {
 }
 
 
-const OpinionOrderBook = ({ market }: { market: MarketData }) => {
+const OpinionOrderBook = ({ market , marketId }: { market: MarketData , marketId:string}) => {
 
+const [ marketData, setMarket] = useState(market)
     const socket = useSocket();
 
 
     useEffect(()=>{
-        if(market){
-            socket?.send(JSON.stringify({ "name" :"hello"}));
+        if(socket){
+            socket.send(JSON.stringify({ "type" :"SUBSCRIBE_MARKET","payload":{"marketId":marketId}}));
+            socket.onmessage=(event)=>{
+            setMarket(JSON.parse(event.data))
+            console.log(event.data)
+            }
+        }
+
+        return ()=>{
+          if(socket){
+            socket.send(JSON.stringify({
+              "type":"UNSUBSCIBE_MARKET",
+              "payload":{
+                "marketId":marketId
+              }
+            }))
+          }
         }
 
     },[market,socket])
 
 
 
-      console.log("yes order -----> "+ JSON.stringify(market.Yes))
+      console.log("yes order -----> "+ JSON.stringify(marketData.Yes))
 
-  const yesOrders = market.Yes;
+  const yesOrders = marketData.Yes;
   console.log("yes order -----> "+ JSON.stringify(yesOrders))
-  const noOrders = market.No;
+  const noOrders = marketData.No;
 
   const maxYesTotal = Math.max(...yesOrders.map((o) => o.totalQty), 1);
   const maxNoTotal = Math.max(...noOrders.map((o) => o.totalQty), 1);

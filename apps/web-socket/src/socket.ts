@@ -74,7 +74,11 @@ const handleMessageRecieved = (response: MessageRecieved, ws: WebSocket) => {
         break;
 
       case "NEW_MARKET":
-        handleMarketUpdate(response.payload, ws);
+        handleNewMarket(response.payload, ws);
+        break;
+
+      case "MARKET_UPDATE":
+        handleMarketUpdate(response.payload,ws);
         break;
 
       default:
@@ -139,23 +143,50 @@ const handleUnSubscriptionRequest = (
   }
 };
 
-const handleMarketUpdate = (
-  response: Extract<MessageRecieved, { type: "NEW_MARKET" }>["payload"],
+const handleNewMarket = (
+  payload: Extract<MessageRecieved, { type: "NEW_MARKET" }>["payload"],
   ws: WebSocket
 ) => {
   try {
-    const {  marketId } = response;
+    const {  marketId } = payload;
 
     if(GlobalMarkets[marketId]){
       console.log("already listening to");
       return
     }
 
-    GlobalMarkets[marketId]
+    GlobalMarkets[marketId]= []
+    console.log("Market added successfully "+marketId);
 
 
     return;
   } catch (error) {
-    console.log("error in market update " + error);
+    console.log("error in market creation " + error);
   }
 };
+
+
+const handleMarketUpdate = (response:Extract <MessageRecieved,{type:"MARKET_UPDATE"}>["payload"],ws:WebSocket)=>{
+  try {
+    const {marketId,orderBook} = response;
+
+    const marketExist = GlobalMarkets[marketId];
+
+    if(!marketExist){
+      console.log("market is not created before critical error ");
+      return 
+    }
+
+    marketExist.forEach((ws)=>{
+      ws.send(JSON.stringify(orderBook));
+    })
+
+    console.log("sent updates to all socket connection")
+
+    return;
+
+    
+  } catch (error) {
+    console.log("Error in updating market "+error)
+  }
+}

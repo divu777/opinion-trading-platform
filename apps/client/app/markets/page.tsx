@@ -1,15 +1,11 @@
 import MarketCard from '@/components/MarketCard';
-import axios from 'axios'
-import { redirect } from 'next/navigation';
+import { fetchAllMarkets } from '@/lib/utils';
 import React from 'react'
 
-const fetchAllMarkets = async () => {
-  const response = await axios.get("http://localhost:3000/api/market")
-  return response.data.markets;
-}
+
 
 const Page = async () => {
-  const markets: string[] = await fetchAllMarkets();
+  const markets: string[] = await fetchAllMarkets()
   return (
     <div className="h-screen w-screen flex bg-black text-white">
       
@@ -43,3 +39,5 @@ const Page = async () => {
 };
 
 export default Page;
+
+

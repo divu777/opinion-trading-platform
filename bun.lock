@@ -16,6 +16,7 @@
         "@radix-ui/react-slot": "^1.2.3",
         "@repo/common": "*",
         "@repo/db": "*",
+        "@tanstack/react-query": "^5.81.5",
         "axios": "^1.9.0",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
@@ -29,6 +30,7 @@
       },
       "devDependencies": {
         "@tailwindcss/postcss": "^4",
+        "@tanstack/eslint-plugin-query": "^5.81.2",
         "@types/node": "^20",
         "@types/react": "^19",
         "@types/react-dom": "^19",
@@ -249,6 +251,12 @@
     "@tailwindcss/oxide-darwin-arm64": ["@tailwindcss/oxide-darwin-arm64@4.1.10", "https://registry.npmmirror.com@tailwindcss/oxide-darwin-arm64/-/oxide-darwin-arm64-4.1.10.tgz", { "os": "darwin", "cpu": "arm64" }, ""],
 
     "@tailwindcss/postcss": ["@tailwindcss/postcss@4.1.10", "https://registry.npmmirror.com@tailwindcss/postcss/-/postcss-4.1.10.tgz", { "dependencies": { "@alloc/quick-lru": "^5.2.0", "@tailwindcss/node": "4.1.10", "@tailwindcss/oxide": "4.1.10", "postcss": "^8.4.41", "tailwindcss": "4.1.10" } }, ""],
+
+    "@tanstack/eslint-plugin-query": ["@tanstack/eslint-plugin-query@5.81.2", "https://registry.npmmirror.com/@tanstack/eslint-plugin-query/-/eslint-plugin-query-5.81.2.tgz", { "dependencies": { "@typescript-eslint/utils": "^8.18.1" }, "peerDependencies": { "eslint": "^8.57.0 || ^9.0.0" } }, "sha512-h4k6P6fm5VhKP5NkK+0TTVpGGyKQdx6tk7NYYG7J7PkSu7ClpLgBihw7yzK8N3n5zPaF3IMyErxfoNiXWH/3/A=="],
+
+    "@tanstack/query-core": ["@tanstack/query-core@5.81.5", "https://registry.npmmirror.com/@tanstack/query-core/-/query-core-5.81.5.tgz", {}, "sha512-ZJOgCy/z2qpZXWaj/oxvodDx07XcQa9BF92c0oINjHkoqUPsmm3uG08HpTaviviZ/N9eP1f9CM7mKSEkIo7O1Q=="],
+
+    "@tanstack/react-query": ["@tanstack/react-query@5.81.5", "https://registry.npmmirror.com/@tanstack/react-query/-/react-query-5.81.5.tgz", { "dependencies": { "@tanstack/query-core": "5.81.5" }, "peerDependencies": { "react": "^18 || ^19" } }, "sha512-lOf2KqRRiYWpQT86eeeftAGnjuTR35myTP8MXyvHa81VlomoAWNEd8x5vkcAfQefu0qtYCvyqLropFZqgI2EQw=="],
 
     "@tootallnate/quickjs-emscripten": ["@tootallnate/quickjs-emscripten@0.23.0", "https://registry.npmmirror.com@tootallnate/quickjs-emscripten/-/quickjs-emscripten-0.23.0.tgz", {}, ""],
 

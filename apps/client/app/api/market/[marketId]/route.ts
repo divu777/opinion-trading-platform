@@ -1,5 +1,6 @@
 import { RedisManager } from "@/lib/redis";
 import { StartMarketSchema } from "@repo/common";
+import { randomUUID } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(_:NextRequest,{params}:{params:Promise<{marketId:string}>}){
@@ -17,34 +18,21 @@ export async function GET(_:NextRequest,{params}:{params:Promise<{marketId:strin
 
     const redisclient = RedisManager.getInstance();
 
-    const eventId = await redisclient.pushToEngine({marketId},"GET_MARKET_ORDERBOOK")
+    // const eventId = await redisclient.pushToEngine({marketId},"GET_MARKET_ORDERBOOK")
 
-    const response = await redisclient.subscribeToEvent(eventId);
+    // const response = await redisclient.subscribeToEvent(eventId);
 
+    const uniqueId = randomUUID()
+            const promise =  redisclient.subscribeToEvent(uniqueId);
+            const eventId = await redisclient.pushToEngine({marketId},"GET_MARKET_ORDERBOOK",uniqueId);
+    
+            const response = await promise
 
-    return NextResponse.json(response)
-}
-
-
-
-export async function POST (req:NextRequest){
-    const body  = await req.json();
-
-     const validInput = StartMarketSchema.safeParse(body)
-
-    if(!validInput.success){
-        return NextResponse.json({
-            message:validInput.error.message,
-            success:false
-        })
-    }
-
-    const redisclient = RedisManager.getInstance();
-
-    const eventId = await redisclient.pushToEngine(body,"CREATE_MARKET")
-
-    const response = await redisclient.subscribeToEvent(eventId);
+    
 
 
     return NextResponse.json(response)
 }
+
+
+

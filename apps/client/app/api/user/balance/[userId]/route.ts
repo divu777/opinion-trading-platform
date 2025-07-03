@@ -1,21 +1,33 @@
 import { RedisManager } from "@/lib/redis";
 import { NextRequest, NextResponse } from "next/server";
+import { randomUUID } from "crypto";
+export async function GET(
+  _: NextRequest,
+  { params }: { params: Promise<{ userId: string }> }
+) {
+  const userId = (await params).userId;
 
-export async function GET(_:NextRequest,{params}:{params:Promise<{userId:string}>}){
+  if (!userId) {
+    return NextResponse.json({
+      message: "user id not valid",
+    });
+  }
 
-    const userId = (await params).userId;
+  const redisclient = RedisManager.getInstance();
 
-    if(!userId){
-        return NextResponse.json({
-            message:"user id not valid"
-        })
-    }
+  // const eventId = await redisclient.pushToEngine({userId},"GET_USER_STOCK_BALANCE");
 
-    const redisclient = RedisManager.getInstance()
+  // const response = await redisclient.subscribeToEvent(eventId);
 
-    const eventId = await redisclient.pushToEngine({userId},"GET_USER_STOCK_BALANCE");
+  const uniqueId = randomUUID();
+  const promise = redisclient.subscribeToEvent(uniqueId);
+  const eventId = await redisclient.pushToEngine(
+    { userId },
+    "GET_USER_STOCK_BALANCE",
+    uniqueId
+  );
 
-    const response = await redisclient.subscribeToEvent(eventId);
-    return NextResponse.json(response)
+  const response = await promise;
+
+  return NextResponse.json(response);
 }
-

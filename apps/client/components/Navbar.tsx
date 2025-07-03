@@ -11,13 +11,13 @@ const Navbar = () => {
 
       {/* Right: Links or Buttons */}
       <div className="flex space-x-6 text-sm font-medium">
-        <a href="#" className="hover:text-orange-500 transition duration-200">
+        <a href="/" className="hover:text-orange-500 transition duration-200">
           Home
         </a>
-        <a href="#" className="hover:text-orange-500 transition duration-200">
+        <a href="/markets" className="hover:text-orange-500 transition duration-200">
           Markets
         </a>
-        <a href="#" className="hover:text-orange-500 transition duration-200">
+        <a href="/profile" className="hover:text-orange-500 transition duration-200">
           Profile
         </a>
       </div>

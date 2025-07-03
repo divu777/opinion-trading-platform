@@ -1,7 +1,7 @@
 import e from 'express'
 import cors from 'cors'
 import orderRoute from './routes/order.route';
-import { Manager } from './util/redis/index';
+import { Manager } from './redis/index';
 
 
 const app=e();

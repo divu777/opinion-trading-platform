@@ -2,14 +2,19 @@
 
 import React, { useState } from "react";
 import MarketCard from "./MarketCard";
+import { addnewMarket } from "@/lib/utils";
 
-const AdminDashboard = ({ marketsData }: { marketsData: string[] }) => {
+const AdminDashboard = ({ marketsData  }: { marketsData: string[] }) => {
   const [markets, setMarkets] = useState(marketsData);
   const [showModal, setShowModal] = useState(false);
   const [marketName, setMarketName] = useState("");
 
-  const handleAddMarket = () => {
+  const handleAddMarket = async() => {
+    console.log("heell")
     if (!marketName.trim()) return;
+
+    const response = await addnewMarket(marketName)
+    console.log(JSON.stringify(response)+".      .      .    . ")
 
     setMarkets((prev) => [...prev, marketName]);
     setMarketName("");

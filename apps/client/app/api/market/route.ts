@@ -29,7 +29,10 @@ export const  GET = async(_:NextRequest)=>{
 
 export async function POST (req:NextRequest){
    try {
+    console.log("heere")
      const body  = await req.json();
+
+     console.log(JSON.stringify(body))
  
       const validInput = StartMarketSchema.safeParse(body)
  

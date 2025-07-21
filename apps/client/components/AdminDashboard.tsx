@@ -25,9 +25,9 @@ const AdminDashboard = ({ marketsData  }: { marketsData: string[] }) => {
     <div className="w-screen h-screen flex flex-col bg-black text-white">
       {/* Header */}
       <div className="w-full h-20 flex items-center justify-between px-10 bg-zinc-950 border-b border-zinc-800">
-        <h1 className="text-2xl font-bold text-orange-400">All the markets</h1>
+        <h1 className="text-2xl font-bold text-white">All the markets</h1>
         <button
-          className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700"
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           onClick={() => setShowModal(true)}
         >
           + Add Market
@@ -51,7 +51,7 @@ const AdminDashboard = ({ marketsData  }: { marketsData: string[] }) => {
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
           <div className="bg-zinc-900 p-6 rounded-lg w-96 border border-zinc-800 shadow-lg">
-            <h2 className="text-xl font-bold text-orange-400 mb-4">
+            <h2 className="text-xl font-bold text-white mb-4">
               Add New Market
             </h2>
             <input
@@ -69,7 +69,7 @@ const AdminDashboard = ({ marketsData  }: { marketsData: string[] }) => {
                 Cancel
               </button>
               <button
-                className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded"
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
                 onClick={handleAddMarket}
               >
                 Add

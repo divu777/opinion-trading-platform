@@ -29,7 +29,7 @@ const Page = async () => {
       {/* Right Side - Sidebar */}
       <div className="w-1/4 h-full bg-zinc-950 border-l border-zinc-800 flex items-center justify-center p-6">
         <div className="bg-zinc-900 p-6 rounded-xl shadow-md border border-zinc-800 w-full max-w-sm text-center">
-          <h3 className="text-2xl font-semibold text-orange-500 mb-4">User Info</h3>
+          <h3 className="text-2xl font-semibold text-blue-500 mb-4">User Info</h3>
           <p className="text-zinc-400 text-sm">User details or profile go here.</p>
         </div>
       </div>

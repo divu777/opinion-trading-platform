@@ -248,7 +248,7 @@ export default function Home() {
                 <div className="flex items-start justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900 flex-1 pr-2">{market.question}</h3>
                   {market.trending && (
-                    <div className="flex items-center space-x-1 bg-orange-100 text-orange-600 px-2 py-1 rounded-full text-xs font-medium">
+                    <div className="flex items-center space-x-1 bg-orange-100 text-blue-600 px-2 py-1 rounded-full text-xs font-medium">
                       <TrendingUp className="w-3 h-3" />
                       <span>Trending</span>
                     </div>
@@ -377,7 +377,7 @@ export default function Home() {
             
             <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow">
               <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-                <BarChart3 className="w-6 h-6 text-orange-600" />
+                <BarChart3 className="w-6 h-6 text-blue-600" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Advanced Analytics</h3>
               <p className="text-gray-600">

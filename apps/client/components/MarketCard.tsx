@@ -8,9 +8,9 @@ const MarketCard = ({market}:{market:string}) => {
      <div 
                 onClick={()=>router.push(`/markets/${market}`)}
                   key={market}
-                  className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 shadow-md hover:shadow-lg hover:border-orange-500 transition duration-300 h-56"
+                  className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 shadow-md hover:shadow-lg hover:border-blue-500 transition duration-300 h-56"
                 >
-                  <h3 className="text-lg font-semibold text-orange-500 mb-2">{market}</h3>
+                  <h3 className="text-lg font-semibold text-blue-500 mb-2">{market}</h3>
                   <p className="text-zinc-400 text-sm">
                     This is a market card. You can show more details here later.
                   </p>

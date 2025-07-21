@@ -39,7 +39,7 @@ const Page = () => {
               id="name"
               value={userId}
               placeholder="Your name"
-              className="w-full px-4 py-2 rounded-md bg-zinc-800 text-white placeholder-zinc-500 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-4 py-2 rounded-md bg-zinc-800 text-white placeholder-zinc-500 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-white-500"
               onChange={(e)=>setUserId(e.target.value) }
             />
           </div>
@@ -79,7 +79,7 @@ const Page = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg transition duration-300
+            className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg transition duration-300
             "
           >
             Submit

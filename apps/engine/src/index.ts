@@ -1,6 +1,5 @@
 import e from 'express'
 import cors from 'cors'
-import orderRoute from './routes/order.route';
 import { Manager } from './redis/index';
 
 
@@ -10,7 +9,6 @@ console.log( typeof PORT)
 app.use(e.json());
 app.use(cors());
 
-app.use("/api/v1/order",orderRoute);
 
 
 

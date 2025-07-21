@@ -1,4 +1,4 @@
-import OpinionOrderBook from '@/components/OrderBook';
+import OpinionOrderBook from '@/components/OrderBook2';
 import axios from 'axios';
 import React from 'react';
 
@@ -26,7 +26,9 @@ const Page = async ({ params }: { params: { marketId: string } }) => {
 
   return (
 
-     <OpinionOrderBook market={market} marketId={marketId} />
+    //  <OpinionOrderBook market={market} marketId={marketId} />
+     
+    <OpinionOrderBook market={market} marketId={marketId} />
   );
 };
 

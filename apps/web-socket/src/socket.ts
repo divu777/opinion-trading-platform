@@ -102,7 +102,6 @@ const handleSubscriptionRequest = (
 
     const socketMarket = GlobalUsers.get(ws);
     if (socketMarket?.includes(marketId)) {
-      ws.send("already subscribed");
       return;
     }
 

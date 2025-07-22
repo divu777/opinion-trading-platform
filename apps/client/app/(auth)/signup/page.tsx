@@ -1,21 +1,32 @@
 'use client'
 import axios from "axios";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 const Page = () => {
     const [userId,setUserId] = useState("");
+    const  [password,setPassword] = useState("");
     const router = useRouter()
     async function createUser(e:any){
         e.preventDefault()
-            const response = await axios.post("/api/auth/signin",{
-                data:{
-                    userId
-                }
-            });
-            console.log(response.data.success+"----->");
-            if(response.data.success){
-                router.push("/markets")
+            // const response = await axios.post("/api/auth/signin",{
+            //     data:{
+            //         userId
+            //     }
+            // });
+            // console.log(response.data.success+"----->");
+            // if(response.data.success){
+            //     router.push("/markets")
+            // }
+            const response = await signIn('credentials',{
+              redirect:false,
+              username:userId,
+              password
+            })
+
+            if(response?.ok){
+              router.push("/markets");
             }
         }
   return (
@@ -61,7 +72,7 @@ const Page = () => {
           </div> */}
 
           {/* Password */}
-          {/* <div>
+          <div>
             <label
               htmlFor="password"
               className="block text-sm font-medium text-zinc-300 mb-1"
@@ -70,11 +81,13 @@ const Page = () => {
             </label>
             <input
               type="password"
+              value={password}
               id="password"
+              onChange={(e)=>setPassword(e.target.value)}
               placeholder="••••••••"
               className="w-full px-4 py-2 rounded-md bg-zinc-800 text-white placeholder-zinc-500 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
-          </div> */}
+          </div>
 
           {/* Submit Button */}
           <button

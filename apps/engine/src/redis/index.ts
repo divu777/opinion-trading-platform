@@ -294,7 +294,6 @@ export class Manager {
           if (!this.Stock_Balances[userId][marketId]) {
             this.Stock_Balances[userId][marketId] = { [ticket_type]: 0 };
           }
-
           console.log(currOrder.userId)
           if (!this.Stock_Balances[currOrder.userId]) {
             return {
@@ -305,6 +304,7 @@ export class Manager {
               },
             };
           }
+          
 
           if (!this.Stock_Balances[currOrder.userId]![marketId]) {
             return {
@@ -325,6 +325,8 @@ export class Manager {
               },
             };
           }
+
+          
 
           this.Stock_Balances[userId]![marketId]![ticket_type]! += filled;
 
@@ -688,13 +690,17 @@ export class Manager {
         },
       };
 
-      this.Stock_Balances = {
-      "ADMIN":{
-        [marketId]:{
+      if(!this.Stock_Balances["ADMIN"]){
+        this.Stock_Balances["ADMIN"]={
+        }
+
+      }
+
+      this.Stock_Balances["ADMIN"][marketId] ={
           "YES":100,
           "NO":100
-        }
-      }
+        
+      
     }
 
     this.sendSocket({"type":"NEW_MARKET","payload":{
@@ -846,6 +852,8 @@ console.log("hhrrprice ")
     }
 
     const userExist = this.Stock_Balances[userId]
+
+    console.log(JSON.stringify(userExist))
 
     if(!userExist){
       return {

@@ -14,13 +14,17 @@ const page = async () => {
     redirect('/')
   }
 
-  type Balnce ={
-    
+  type ProfileType ={
+    res2:{
+      balance:number
+    },
+    res1:{
+      stock_balances: Record<string,Record<string,number>>}
   }
 
-  const data = await getUserData(session.user.name)
-  const balance = data?.res2?.balance ?? 0
-  const stockHoldings = data?.res1?.stock_balances ?? {}
+  const data:ProfileType = await getUserData(session.user.name)
+  const balance = data.res2.balance ?? 0
+  const stockHoldings = data.res1.stock_balances ?? {}
 
 
   const totalPortfolioValue = Object.values(stockHoldings).reduce((total, positions) => {

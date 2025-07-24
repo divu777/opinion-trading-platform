@@ -292,7 +292,10 @@ export class Manager {
             this.Stock_Balances[userId] = {};
           }
           if (!this.Stock_Balances[userId][marketId]) {
-            this.Stock_Balances[userId][marketId] = { [ticket_type]: 0 };
+            this.Stock_Balances[userId][marketId] = { };
+          }
+          if (!this.Stock_Balances[userId][marketId][ticket_type]) {
+            this.Stock_Balances[userId][marketId][ticket_type] = 0 ;
           }
           console.log(currOrder.userId)
           if (!this.Stock_Balances[currOrder.userId]) {
@@ -328,9 +331,11 @@ export class Manager {
 
           
 
-          this.Stock_Balances[userId]![marketId]![ticket_type]! += filled;
+          this.Stock_Balances[userId][marketId][ticket_type] += filled;
 
           this.Stock_Balances[currOrder.userId]![marketId]![ticket_type]!-=filled;
+
+          console.log(JSON.stringify(this.Stock_Balances)+"======"+filled)
 
           if(this.Stock_Balances[currOrder.userId]![marketId]![ticket_type]===0){
             delete this.Stock_Balances[currOrder.userId]![marketId]![ticket_type]

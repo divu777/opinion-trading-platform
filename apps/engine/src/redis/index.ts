@@ -24,6 +24,7 @@ export class Manager {
   private Stock_Balances: Stock_balance;
   private websocket: WebSocket;
   private constructor() {
+    console.log("called")
     this.client = createClient({
       url: process.env.REDIS_URL,
     });
@@ -33,6 +34,7 @@ export class Manager {
     this.Stock_Balances= {};
     this.websocket=new WebSocket("ws://localhost:4000")
     this.populateAdminBalance();
+    setInterval(this.printOrderBook.bind(this),30000)
   }
 
   populateAdminBalance(){
@@ -63,10 +65,25 @@ export class Manager {
     }
   }
 
+  printOrderBook(){
+    console.log("here is the orderbook =============")
+    console.log(JSON.stringify(this.OrderBook))
+    console.log("here is the userbalance =============")
+
+    console.log(JSON.stringify(this.User_Balances))
+    console.log("here is the stock balance =============")
+        console.log(JSON.stringify(this.Stock_Balances))
+
+  }
+
   static getInstance() {
+    console.log("called instance")
     if (!Manager.instance) {
+      console.log("new instance")
       Manager.instance = new Manager();
     }
+    console.log("no instance")
+    console.log(JSON.stringify(Manager.instance)+"new instanccccc")
     return Manager.instance;
   }
 

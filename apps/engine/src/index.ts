@@ -1,6 +1,8 @@
 import e from 'express'
 import cors from 'cors'
 import { Manager } from './redis/index';
+import './bots';
+import { getmarkets } from './bots';
 
 
 const app=e();
@@ -20,6 +22,7 @@ redisInstance.listenForOrders().catch((err)=>{
 })
 
 
+// setInterval(getmarkets,15000)
 
 
 

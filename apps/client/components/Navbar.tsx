@@ -1,3 +1,4 @@
+import { Activity } from 'lucide-react'
 import React from 'react'
 
 const Navbar = () => {
@@ -5,9 +6,12 @@ const Navbar = () => {
     <nav className="relative top-0 h-16 w-full bg-white text-zinc-900 flex items-center justify-between px-6 border-b border-zinc-300 shadow-sm">
       
       {/* Left: Logo or Title */}
-      <div className="text-xl font-semibold tracking-tight">
-        Lose<span className="text-zinc-500">Money</span>
-      </div>
+       <div className="flex items-center space-x-1 sm:space-x-2">
+                <Activity className="w-6 h-6 text-black" />
+                <h1 className="text-lg sm:text-xl font-bold text-black">
+                  Opinion Markets
+                </h1>
+              </div>
 
       {/* Right: Links or Buttons */}
       <div className="flex space-x-6 text-sm font-medium">

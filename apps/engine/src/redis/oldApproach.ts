@@ -1,3 +1,5 @@
+
+// 2 Seperate Market
 import { createClient } from "@redis/client";
 import type { RedisClientType } from "redis";
 import type { PriceLevel, SubscribeMessageType,OrderBookSystem } from '@repo/common';
@@ -15,13 +17,14 @@ type Stock_balance={
 }
 
 
-
+type Market_Info=Record<string,{title:string,description:string,YES:number,NO:number}>
 export class Manager {
   private client: RedisClientType;
   private static instance: Manager;
   private OrderBook: OrderBookSystem;
   private User_Balances: Record<string, BALANCES>;
   private Stock_Balances: Stock_balance;
+  private Market_Info : Market_Info;
   private websocket: WebSocket;
   private constructor() {
     console.log("called")
@@ -33,6 +36,7 @@ export class Manager {
     this.User_Balances = {};
     this.Stock_Balances= {};
     this.websocket=new WebSocket("ws://localhost:4000")
+    this.Market_Info={}
     this.populateAdminBalance();
     setInterval(this.printOrderBook.bind(this),30000)
   }
@@ -109,11 +113,11 @@ export class Manager {
         break;
 
       case "CREATE_MARKET":
-        response = await this.createNewMarket(data);
+        response =  this.createNewMarket(data);
         break;
 
       case "GET_MARKET_ORDERBOOK":
-        response = await this.getMarketOrderBook(data);
+        response = this.getMarketOrderBook(data);
         break;
 
       case "CREATE_USER":
@@ -126,6 +130,10 @@ export class Manager {
 
       case "GET_USER_BALANCE":
         response =  this.getUserBalance(data);
+        break;
+      
+      case "RESOLVE_MARKET":
+        response = this.resolveMarket(data);
         break;
 
       case "GET_USER_STOCK_BALANCE":
@@ -149,7 +157,7 @@ export class Manager {
     await this.client.publish(eventName, JSON.stringify(message));
   }
 
-  resolveMarket(data: any) {
+  resolveMarket(data: Extract<SubscribeMessageType , { type: "RESOLVE_MARKET"}>) {
     const { marketId, winner } = data.payload;
 
     if (!marketId || !this.OrderBook[marketId]) {
@@ -161,6 +169,20 @@ export class Manager {
         },
       };
     }
+
+
+
+    const WinnerSideSELLprices = Object.keys(this.OrderBook[marketId][winner]["SELL"].priceLevels)
+    console.log(JSON.stringify(WinnerSideSELLprices)+"--------sell")
+
+    const loser = winner==="YES"?"NO":"YES"
+
+
+     const LoserSELLprices = Object.keys(this.OrderBook[marketId][loser]["SELL"].priceLevels)
+    console.log(JSON.stringify(LoserSELLprices)+"--------sell")
+
+
+
 
     // winner - will be side either YES or NO and then we iterate over the buy and sell table and add money to people balances
     // doing simple 10-price * quantity
@@ -309,12 +331,11 @@ export class Manager {
             this.Stock_Balances[userId] = {};
           }
           if (!this.Stock_Balances[userId][marketId]) {
-            this.Stock_Balances[userId][marketId] = { };
+            this.Stock_Balances[userId][marketId] = {};
           }
           if (!this.Stock_Balances[userId][marketId][ticket_type]) {
             this.Stock_Balances[userId][marketId][ticket_type] = 0 ;
           }
-          console.log(currOrder.userId)
           if (!this.Stock_Balances[currOrder.userId]) {
             return {
               eventId: data.eventId,
@@ -393,22 +414,63 @@ export class Manager {
 
     if (remainingQuantity > 0) {
       // make entry to that price
-      const buyside = marketExist[ticket_type]["BUY"];
+      // const buyside = marketExist[ticket_type]["BUY"];
 
-      if (!buyside.priceLevels[price]) {
-        buyside.priceLevels[price] = {
-          totalQty: 0,
-          orders: [],
-        };
+      // if (!buyside.priceLevels[price]) {
+      //   buyside.priceLevels[price] = {
+      //     totalQty: 0,
+      //     orders: [],
+      //   };
+      // }
+
+      // buyside.priceLevels[price].orders.push({
+      //   userId,
+      //   stock_quantity: remainingQuantity,
+      // });
+
+      // buyside.totalQty += remainingQuantity;
+      // buyside.priceLevels[price].totalQty += remainingQuantity;
+
+      const oppositeSide = ticket_type ==="YES" ? "NO":"YES"
+      const oppositePrice = 10-price 
+      
+      const oppositeBuySideMarket = marketExist[oppositeSide]["BUY"];
+
+
+      if(!oppositeBuySideMarket.priceLevels[oppositePrice]){
+        oppositeBuySideMarket.priceLevels[oppositePrice] = {
+          totalQty:0,
+          orders:[]
+        }
       }
 
-      buyside.priceLevels[price].orders.push({
-        userId,
-        stock_quantity: remainingQuantity,
-      });
+      oppositeBuySideMarket.priceLevels[oppositePrice].orders.push({
+        userId:'SYSTEM',
+        stock_quantity:remainingQuantity
+      })
 
-      buyside.totalQty += remainingQuantity;
-      buyside.priceLevels[price].totalQty += remainingQuantity;
+      oppositeBuySideMarket.priceLevels[oppositePrice].totalQty+=remainingQuantity
+      oppositeBuySideMarket.totalQty+=remainingQuantity
+
+
+      if(!this.Stock_Balances[userId]){
+        this.Stock_Balances[userId]={}
+      }
+
+      if(!this.Stock_Balances[userId][marketId]){
+        this.Stock_Balances[userId][marketId] ={}
+      }
+
+      if(!this.Stock_Balances[userId][marketId][ticket_type]){
+                this.Stock_Balances[userId][marketId][ticket_type] = 0
+
+      } 
+
+      this.Stock_Balances[userId][marketId][ticket_type] += remainingQuantity
+
+      const totalCost = price * remainingQuantity * 100 
+      this.User_Balances[userId]!.balance-=totalCost
+
     }
 
 
@@ -478,7 +540,7 @@ export class Manager {
       }
     }
 
-    if(!this.Stock_Balances[userId]){
+    if(!this.Stock_Balances[userId] || !this.Stock_Balances[userId][marketId] || !this.Stock_Balances[userId][marketId][ticket_type] || this.Stock_Balances[userId][marketId][ticket_type] < quantity){
       return{
         eventId:data.eventId,
         payload:{
@@ -574,22 +636,61 @@ export class Manager {
 
       // make entry in sell table 
 
-      const sellSide = marketExist[ticket_type]["SELL"];
+      // const sellSide = marketExist[ticket_type]["SELL"];
 
-      if(!sellSide.priceLevels[price]){
-        sellSide.priceLevels[price]={
+      // if(!sellSide.priceLevels[price]){
+      //   sellSide.priceLevels[price]={
+      //     totalQty:0,
+      //     orders:[]
+      //   }
+      // }
+
+      // sellSide.priceLevels[price].orders.push({
+      //   userId,
+      //   stock_quantity:remainingQty
+      // })
+
+      // sellSide.priceLevels[price].totalQty+=remainingQty
+      // sellSide.totalQty+=remainingQty
+
+      const oppositeSide = ticket_type ==="YES" ? "NO":"YES"
+      const oppositePrice = 10-price 
+      
+      const oppositeSellSideMarket = marketExist[oppositeSide]["SELL"];
+
+
+      if(!oppositeSellSideMarket.priceLevels[oppositePrice]){
+        oppositeSellSideMarket.priceLevels[oppositePrice] = {
           totalQty:0,
           orders:[]
         }
       }
 
-      sellSide.priceLevels[price].orders.push({
-        userId,
+      oppositeSellSideMarket.priceLevels[oppositePrice].orders.push({
+        userId:'SYSTEM',
         stock_quantity:remainingQty
       })
 
-      sellSide.priceLevels[price].totalQty+=remainingQty
-      sellSide.totalQty+=remainingQty
+      oppositeSellSideMarket.priceLevels[oppositePrice].totalQty+=remainingQty
+      oppositeSellSideMarket.totalQty+=remainingQty
+
+
+      if(!this.Stock_Balances[userId]){
+        this.Stock_Balances[userId]={}
+      }
+
+      if(!this.Stock_Balances[userId][marketId]){
+        this.Stock_Balances[userId][marketId] ={}
+      }
+
+      if(!this.Stock_Balances[userId][marketId][ticket_type]){
+                this.Stock_Balances[userId][marketId][ticket_type] = 0
+
+      } 
+
+
+      const totalCost = price * remainingQty * 100 
+      this.User_Balances[userId]!.balance+=totalCost
 
     }
 

@@ -1,5 +1,5 @@
 import { createClient } from "redis";
-import { Manager } from "./redis";
+import { Manager } from "./redis/oldApproach";
 import { randomUUIDv7 } from "bun";
 
 

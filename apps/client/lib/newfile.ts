@@ -28,6 +28,7 @@ export const authOptions : AuthOptions ={
         }
 
         const { username , password } = validInputs.data
+        console.log(JSON.stringify(validInputs))
 
         const redisclient = RedisManager.getInstance()
 
@@ -45,7 +46,7 @@ export const authOptions : AuthOptions ={
 
         console.log("responssee")
 
-        return {id:'divu',name:'divu'}
+        return {id:username,name:username}
       }
     })
   ],

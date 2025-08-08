@@ -66,8 +66,7 @@ enum SIDE {
     });
   };
 
-  const totalCost = (shares * (price ))
-  const toWin = (shares * (10-price+price))
+
   const totalQty = yesOrders.reduce((sum,order)=>order.totalQty+sum,0) +noOrders.reduce((sum,order)=>order.totalQty+sum,0)
 
     const socket = useSocket();
@@ -106,12 +105,7 @@ enum SIDE {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-1 sm:space-x-2">
-                <Activity className="w-6 h-6 text-black" />
-                <h1 className="text-lg sm:text-xl font-bold text-black">
-                  Opinion Markets
-                </h1>
-              </div>
+             
               <div className="hidden lg:flex items-center space-x-6 text-sm">
                 <div className="flex items-center space-x-2">
                   <BarChart3 className="w-4 h-4 text-gray-600" />
@@ -124,7 +118,7 @@ enum SIDE {
               </div>
             </div>
             <div className="flex items-center space-x-1 sm:space-x-2 bg-gray-100 px-2 sm:px-4 py-1 sm:py-2 rounded-full border">
-              <div className="w-2 h-2 bg-black rounded-full animate-pulse"></div>
+              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
               <span className="text-xs sm:text-sm text-gray-700">Live</span>
             </div>
           </div>

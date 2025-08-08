@@ -1,24 +1,27 @@
-'use client'
+'use client';
 
-import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation";
 
-const MarketCard = ({market}:{market:string}) => {
-    const router = useRouter()
+const MarketCard = ({ market }: { market: string }) => {
+  const router = useRouter();
+
   return (
-     <div 
-                onClick={()=>router.push(`/markets/${market}`)}
-                  key={market}
-                  className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 shadow-md hover:shadow-lg hover:border-blue-500 transition duration-300 h-56"
-                >
-                  <h3 className="text-lg font-semibold text-blue-500 mb-2">{market}</h3>
-                  <p className="text-zinc-400 text-sm">
-                    This is a market card. You can show more details here later.
-                  </p>
-                </div>
-  )
-}
+    <div
+  onClick={() => router.push(`/markets/${market}`)}
+  key={market}
+  className="bg-white border border-zinc-200 rounded-xl p-6 shadow-sm hover:shadow-md hover:border-zinc-400 transition duration-300 cursor-pointer h-56 flex flex-col justify-between"
+>
+  <h3 className="text-xl font-semibold text-zinc-900">{market}</h3>
+  <p className="text-zinc-500 text-sm mt-2">
+    This is a market card. You can show more details here later.
+  </p>
+</div>
 
-export default MarketCard
+  );
+};
+
+export default MarketCard;
+
 
 
 /*

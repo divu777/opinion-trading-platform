@@ -1,4 +1,4 @@
-import OpinionOrderBook from '@/components/OrderBook2';
+import OpinionOrderBook from '@/components/OpinonCard';
 import axios from 'axios';
 import React from 'react';
 
@@ -18,8 +18,8 @@ const getMarket = async (marketId: string): Promise<MarketData> => {
   return response.data.data;
 };
 
-const Page = async ({ params }: { params: { marketId: string } }) => {
-  const marketId =  params.marketId
+const Page = async ({ params }: { params: Promise<{ marketId: string }> }) => {
+  const marketId =  (await params).marketId
   const market = await getMarket(marketId);
   
 

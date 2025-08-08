@@ -1,81 +1,70 @@
 'use client'
-import axios from "axios";
+
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 
 const Page = () => {
-    const [userId,setUserId] = useState("");
-    const  [password,setPassword] = useState("");
-    const router = useRouter()
-    async function createUser(e:any){
-        e.preventDefault()
-            // const response = await axios.post("/api/auth/signin",{
-            //     data:{
-            //         userId
-            //     }
-            // });
-            // console.log(response.data.success+"----->");
-            // if(response.data.success){
-            //     router.push("/markets")
-            // }
-            const response = await signIn('credentials',{
-              redirect:false,
-              username:userId,
-              password
-            })
+  const [userId, setUserId] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
 
-            if(response?.ok){
-              router.push("/markets");
-            }
-        }
+  async function createUser(e: any) {
+    e.preventDefault();
+
+    const response = await signIn("credentials", {
+      redirect: false,
+      username: userId,
+      password,
+    });
+
+    if (response?.ok) {
+      router.push("/markets");
+    }
+  }
+
   return (
-    <div className="w-screen h-screen flex items-center justify-center bg-black text-white transition-colors duration-300">
-      <div className="w-full max-w-md p-8 bg-zinc-900 rounded-xl shadow-2xl border border-zinc-800">
-        <h2 className="text-3xl font-bold text-center text-white mb-8">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.8 }}
+      className="w-screen h-screen flex items-center justify-center bg-gray-100 text-black"
+    >
+      <motion.div
+        initial={{ y: 30, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.3, duration: 0.6 }}
+        className="w-full max-w-md p-8 bg-white rounded-xl shadow-xl border border-gray-200"
+      >
+        <h2 className="text-3xl font-bold text-center text-black mb-8">
           Create Account
         </h2>
+
         <form className="space-y-6" onSubmit={createUser}>
-          {/* userId = to check workings */}
+          {/* User ID */}
           <div>
             <label
               htmlFor="name"
-              className="block text-sm font-medium text-zinc-300 mb-1"
-              
+              className="block text-sm font-medium text-gray-700 mb-1"
             >
-              userId
+              User ID
             </label>
             <input
               type="text"
               id="name"
               value={userId}
               placeholder="Your name"
-              className="w-full px-4 py-2 rounded-md bg-zinc-800 text-white placeholder-zinc-500 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-white-500"
-              onChange={(e)=>setUserId(e.target.value) }
+              className="w-full px-4 py-2 rounded-md bg-gray-50 text-black placeholder-gray-400 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
+              onChange={(e) => setUserId(e.target.value)}
             />
           </div>
-
-          {/* Email */}
-          {/* <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-zinc-300 mb-1"
-            >
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              placeholder="you@example.com"
-              className="w-full px-4 py-2 rounded-md bg-zinc-800 text-white placeholder-zinc-500 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-orange-500"
-            />
-          </div> */}
 
           {/* Password */}
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-zinc-300 mb-1"
+              className="block text-sm font-medium text-gray-700 mb-1"
             >
               Password
             </label>
@@ -83,23 +72,24 @@ const Page = () => {
               type="password"
               value={password}
               id="password"
-              onChange={(e)=>setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full px-4 py-2 rounded-md bg-zinc-800 text-white placeholder-zinc-500 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-4 py-2 rounded-md bg-gray-50 text-black placeholder-gray-400 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
             />
           </div>
 
-          {/* Submit Button */}
-          <button
+          {/* Submit Button with Framer Motion hover effect */}
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.98 }}
             type="submit"
-            className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg transition duration-300
-            "
+            className="w-full py-3 bg-black hover:bg-gray-900 text-white font-semibold rounded-lg transition duration-300"
           >
             Submit
-          </button>
+          </motion.button>
         </form>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

@@ -1,6 +1,6 @@
 import e from 'express'
 import cors from 'cors'
-import { Manager } from './redis/index';
+import { Manager } from './redis/currApproach';
 import './bots';
 import { getmarkets } from './bots';
 

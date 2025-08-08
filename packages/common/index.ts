@@ -1,4 +1,4 @@
-import z from "zod"
+import z from "zod/v4"
 
 // order book
 type SingleOrder = {
@@ -30,6 +30,7 @@ export type Market = {
 // this contains the markett Id and the Market Associated with it
 export type OrderBookSystem = Record<string, Market>;
 
+export type OrderBookSystem2 = Record<string,{BUY:OrderSide,SELL:OrderSide}>
 
 
 export const LimitOrderSchema = z.object({
@@ -45,8 +46,7 @@ export const LimitOrderSchema = z.object({
     .int()
     .positive({ message: "Invalid quantity provided." }),
   price: z
-    .number()
-    .int()
+    .float32()
     .positive()
     .min(0.5)
     .max(9.5, { message: "Invalid Price" }),
@@ -60,6 +60,8 @@ export const StartMarketSchema = z.object({
     .string()
     .min(6)
     .max(50, { message: "Invalid Market ID Admin sensei" }),
+  title : z.string().optional(),
+  description : z.string().optional()
 });
 
 export const CreateNewUserSchema = z.object({
@@ -122,6 +124,14 @@ export type SubscribeMessageType =
     eventId:string,
     payload:{}
    }
+  | {
+    type: "RESOLVE_MARKET",
+    eventId:string,
+    payload:{
+      marketId:string,
+      winner : "YES" | "NO"
+    }
+  }
 
 
 

@@ -11,7 +11,7 @@ const page = async () => {
   const session = await getServerSession(authOptions)
 
   if (!session || !session.user || !session.user.name) {
-    redirect('/')
+    redirect('/login')
   }
 
   type ProfileType ={

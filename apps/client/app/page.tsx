@@ -21,13 +21,13 @@ import {
   Clock,
   Twitter,
   Instagram,
-  Linkedin
+  Linkedin,
+  Github
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function Home() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [currentSlide, setCurrentSlide] = useState(0);
 
   const liveMarkets = [
     {
@@ -59,33 +59,9 @@ export default function Home() {
     }
   ];
 
-  const testimonials = [
-    {
-      name: "Alex Chen",
-      role: "Day Trader",
-      avatar: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=150",
-      content: "OpinionTrade has revolutionized how I think about prediction markets. The interface is intuitive and the liquidity is excellent."
-    },
-    {
-      name: "Sarah Johnson",
-      role: "Financial Analyst",
-      avatar: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150",
-      content: "I've been using this platform for 6 months now. The accuracy of crowd predictions is remarkable, and I've made consistent profits."
-    },
-    {
-      name: "Michael Torres",
-      role: "Crypto Enthusiast",
-      avatar: "https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=150",
-      content: "Finally, a prediction market that gets it right. Fast payouts, fair odds, and amazing community insights."
-    }
-  ];
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % testimonials.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, []);
+
+
 
   const router = useRouter();
 
@@ -116,7 +92,7 @@ export default function Home() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <button onClick={()=>router.push("/signup")} className="bg-green-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-green-700 transition-all transform hover:scale-105 flex items-center justify-center">
+                <button onClick={()=>router.push("/login")} className="bg-green-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-green-700 transition-all transform hover:scale-105 flex items-center justify-center">
                   Start Trading Now
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </button>
@@ -317,47 +293,43 @@ export default function Home() {
           The cleanest, fastest, most accurate way to trade your opinions.
         </p>
         <div className="flex space-x-4">
-          <button className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors">
+            <a href="https://x.com/_chota_don_" target='blank'>
+          <button className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors" >
+
             <Twitter className="w-5 h-5" />
           </button>
+            </a>
+                        <a href="https://github.com/divu777" target='blank'>
           <button className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors">
-            <Instagram className="w-5 h-5" />
+
+            <Github className="w-5 h-5" />
           </button>
+            </a>
+                  <a href="https://linkedin.com/in/divakar-jaiswal" target='blank'>
           <button className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors">
+    
             <Linkedin className="w-5 h-5" />
           </button>
+            </a>
         </div>
       </div>
 
       <div>
         <h3 className="text-lg font-semibold mb-6">Product</h3>
         <ul className="space-y-3 text-gray-400">
-          <li><a href="#" className="hover:text-white">Markets</a></li>
-          <li><a href="#" className="hover:text-white">How It Works</a></li>
-          <li><a href="#" className="hover:text-white">Pricing</a></li>
-          <li><a href="#" className="hover:text-white">API</a></li>
+          <li><Link href="/markets" className="hover:text-white">Markets</Link></li>
+
         </ul>
       </div>
 
       <div>
         <h3 className="text-lg font-semibold mb-6">Company</h3>
         <ul className="space-y-3 text-gray-400">
-          <li><a href="#" className="hover:text-white">About Us</a></li>
-          <li><a href="#" className="hover:text-white">Careers</a></li>
-          <li><a href="#" className="hover:text-white">Press</a></li>
-          <li><a href="#" className="hover:text-white">Contact</a></li>
+          <li><Link href="/about-us" className="hover:text-white">About Us</Link></li>
         </ul>
       </div>
 
-      <div>
-        <h3 className="text-lg font-semibold mb-6">Support</h3>
-        <ul className="space-y-3 text-gray-400">
-          <li><a href="#" className="hover:text-white">Help Center</a></li>
-          <li><a href="#" className="hover:text-white">Terms of Service</a></li>
-          <li><a href="#" className="hover:text-white">Privacy Policy</a></li>
-          <li><a href="#" className="hover:text-white">Security</a></li>
-        </ul>
-      </div>
+
     </div>
 
     <div className="border-t border-gray-800 pt-8 mt-8 flex flex-col md:flex-row justify-between items-center">
@@ -379,14 +351,7 @@ export default function Home() {
 </footer>
 
 
-      {/* Additional sections (How It Works, Features, Footer, etc.) */}
-      {/* You can apply similar class replacements in those sections too:
-          - Replace bg-blue-100 → bg-gray-200
-          - Replace icon color classes → text-gray-700
-          - Remove color gradients and use neutral tones
-          - Use bg-black and text-white for strong CTA buttons
-          - Use green/red ONLY for Yes/No buttons
-      */}
+
 
     </div>
   );

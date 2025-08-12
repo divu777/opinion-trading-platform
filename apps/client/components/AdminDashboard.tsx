@@ -3,20 +3,29 @@
 import React, { useState } from 'react';
 import MarketCard from './MarketCard';
 import { addnewMarket } from '@/lib/utils';
+import { Market_Info, StartMarketType } from '@repo/common';
 
-const AdminDashboard = ({ marketsData }: { marketsData: string[] }) => {
-  const [markets, setMarkets] = useState(marketsData);
+
+
+const AdminDashboard = ({ marketsData }: { marketsData: StartMarketType[] }) => {
+  const [markets,setMarkets] = useState( marketsData);
   const [showModal, setShowModal] = useState(false);
-  const [marketName, setMarketName] = useState('');
+  const [newMarket, setNewMarket] = useState({
+    marketId:'',
+    title:'',
+    description:''
+  });
 
   const handleAddMarket = async () => {
-    if (!marketName.trim()) return;
-
-    const response = await addnewMarket(marketName);
+    const response = await addnewMarket(newMarket);
     console.log(JSON.stringify(response));
 
-    setMarkets((prev) => [...prev, marketName]);
-    setMarketName('');
+    setMarkets((prev)=>([...prev , newMarket]))
+    setNewMarket({
+    marketId:'',
+    title:'',
+    description:''
+    });
     setShowModal(false);
   };
 
@@ -60,9 +69,23 @@ const AdminDashboard = ({ marketsData }: { marketsData: string[] }) => {
       {/* Input Field */}
       <input
         type="text"
-        value={marketName}
-        onChange={(e) => setMarketName(e.target.value)}
-        placeholder="Enter market name"
+        value={newMarket.marketId}
+        onChange={(e) => setNewMarket((prev)=>({...prev , marketId:e.target.value}))}
+        placeholder="Enter market Market Id"
+        className="w-full bg-white text-zinc-800 border border-zinc-300 p-3 rounded-md mb-4 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-600 transition"
+      />
+          <input
+        type="text"
+        value={newMarket.title}
+        onChange={(e) => setNewMarket((prev)=>({...prev , title:e.target.value}))}
+        placeholder="Enter market title"
+        className="w-full bg-white text-zinc-800 border border-zinc-300 p-3 rounded-md mb-4 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-600 transition"
+      />
+          <input
+        type="text"
+        value={newMarket.description}
+        onChange={(e) => setNewMarket((prev)=>({...prev , description:e.target.value}))}
+        placeholder="Enter market description"
         className="w-full bg-white text-zinc-800 border border-zinc-300 p-3 rounded-md mb-4 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-600 transition"
       />
 

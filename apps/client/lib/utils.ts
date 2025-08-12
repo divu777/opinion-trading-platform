@@ -1,20 +1,20 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import axios from "axios";
-import { LimitOrderRequest } from "@repo/common";
+import { LimitOrderRequest, StartMarketType } from "@repo/common";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 export const fetchAllMarkets = async () => {
-  const response = await axios.get("http://localhost:3000/api/market")
+  const response = await axios.get("http://localhost:3000/api/markets")
   return response.data.markets;
 }
 
-export const addnewMarket = async (marketName:string)=>{
-  const response = await axios.post(`http://localhost:3000/api/market`,{
+export const addnewMarket = async (newMarket:StartMarketType)=>{
+  const response = await axios.post(`http://localhost:3000/api/markets`,{
     
-      marketId:marketName
+      ...newMarket
 
   })
   return response.data
@@ -41,5 +41,12 @@ export const getUserData= async(name:string)=>{
   return {res1:response.data,res2:response2.data}
 }
 
+
+export const getSearchInputResult = async(query:string)=>{
+  const response = await axios.get(`http://localhost:3000/api/markets/search-${query}`);
+
+  console.log(JSON.stringify(response.data));
+  return response.data
+}
 
 

@@ -1,11 +1,21 @@
-'use client'
-import React, { useEffect, useState } from 'react';
-import { TrendingUp, TrendingDown, DollarSign, Target, BarChart3, Activity, Users, Zap } from 'lucide-react';
-import { orderRequest } from '@/lib/utils';
-import { useSocket } from '@/lib/socket/useSocket';
-import { useSession } from 'next-auth/react';
-import { data } from 'framer-motion/client';
-import { useRouter } from 'next/navigation';
+"use client";
+import React, { useEffect, useState } from "react";
+import {
+  TrendingUp,
+  TrendingDown,
+  DollarSign,
+  Target,
+  BarChart3,
+  Activity,
+  Users,
+  Zap,
+} from "lucide-react";
+import { orderRequest } from "@/lib/utils";
+import { useSocket } from "@/lib/socket/useSocket";
+import { useSession } from "next-auth/react";
+import { data, div } from "framer-motion/client";
+import { useRouter } from "next/navigation";
+import { authOptions } from "@/lib/newfile";
 
 interface Order {
   price: string;
@@ -22,8 +32,6 @@ enum SIDE {
   SELL = "SELL",
 }
 
-
-
 const OpinionOrderBook = ({
   market,
   marketId,
@@ -31,114 +39,121 @@ const OpinionOrderBook = ({
   market: MarketData;
   marketId: string;
 }) => {
+  const { data } = useSession();
 
-  const {data} = useSession()
-
-  const [userId,setUserId] = useState("")
-
-  
-
+  const [userId, setUserId] = useState("");
 
   const [marketData, setMarket] = useState<MarketData>(market);
   const [isLoading, setIsLoading] = useState(false);
   const [lastUpdate, setLastUpdate] = useState(Date.now());
-  
+
   const yesOrders = marketData.Yes;
   const noOrders = marketData.No;
   const topYesPrice = parseFloat(yesOrders[0]?.price || "0");
   const topNoPrice = parseFloat(noOrders[0]?.price || "0");
-  
+
   const [activeSide, setActiveSide] = useState<SIDE>(SIDE.BUY);
   const [yesSelected, setYesSelected] = useState(true);
   const [price, setPrice] = useState(topYesPrice);
   const [shares, setShares] = useState(0);
   const [orderPlaced, setOrderPlaced] = useState(false);
 
+
   const maxYesTotal = Math.max(...yesOrders.map((o) => o.totalQty), 1);
   const maxNoTotal = Math.max(...noOrders.map((o) => o.totalQty), 1);
 
-  const probability = topYesPrice + topNoPrice > 0 
-    ? (topYesPrice / (topYesPrice + topNoPrice)) * 100 
-    : 0;
+  const probability =
+    topYesPrice + topNoPrice > 0
+      ? (topYesPrice / (topYesPrice + topNoPrice)) * 100
+      : 0;
 
-  const handleIncrement = (amount: number, fn: React.Dispatch<React.SetStateAction<number>>) => {
+  const handleIncrement = (
+    amount: number,
+    fn: React.Dispatch<React.SetStateAction<number>>
+  ) => {
     fn((prev) => {
-      if(prev+amount > 9.5 || prev+amount < 0.5){
-        return prev
-    }else{
-      return (prev + amount)
-    }});
+      if (prev + amount > 9.5 || prev + amount < 0.5) {
+        return prev;
+      } else {
+        return prev + amount;
+      }
+    });
   };
 
-  const handleTrade = async() => {
+  const handleTrade = async () => {
+    console.log("heeeeee");
+    const response = await orderRequest({
+      userId,
+      ticket_type: yesSelected ? "YES" : "NO",
+      order_type: SIDE[activeSide],
+      quantity: shares,
+      price,
+      marketId,
+    });
 
-    console.log("heeeeee")
-    const response = await orderRequest({userId,ticket_type:yesSelected?"YES":"NO",order_type:SIDE[activeSide],quantity:shares,price,marketId})
-    
-        console.log({
-          side: SIDE[activeSide],
-          position: yesSelected ? "Yes" : "No",
-          price,
-          shares,
-          total: (shares * (price)),
-          toWin: (shares * (10-price+price))
-        });
+    // console.log({
+    //   side: SIDE[activeSide],
+    //   position: yesSelected ? "Yes" : "No",
+    //   price,
+    //   shares,
+    //   total: shares * price,
+    //   toWin: shares * (10 - price + price),
+    // });
 
-        setIsLoading(false);
-      setOrderPlaced(true);
+    setIsLoading(false);
+    setOrderPlaced(true);
 
-      setTimeout(() => {
-        setOrderPlaced(false)
-      }, 2000);
-
+    setTimeout(() => {
+      setOrderPlaced(false);
+    }, 2000);
   };
 
-  const totalCost = (shares * price);
-  const totalQty = yesOrders.reduce((sum, order) => order.totalQty + sum, 0) + 
-                  noOrders.reduce((sum, order) => order.totalQty + sum, 0);
+  const totalCost = shares * price;
+  const totalQty =
+    yesOrders.reduce((sum, order) => order.totalQty + sum, 0) +
+    noOrders.reduce((sum, order) => order.totalQty + sum, 0);
 
-const router = useRouter()
-useEffect(()=>{
-  if(data && data.user && data.user.name){
-    setUserId(data.user.name)
-  }else{
-    router.push("/signup")
-    
-  }
+  const router = useRouter();
+  useEffect(() => {
+    if (data && data.user && data.user.name) {
+      setUserId(data.user.name);
+    }
+    // } else {
+    //   router.push("/login");
+    // }
+  }, [data]);
 
-},[data])
+  const socket = useSocket();
+  useEffect(() => {
+    if (socket) {
+      socket.send(
+        JSON.stringify({
+          type: "SUBSCRIBE_MARKET",
+          payload: { marketId: marketId },
+        })
+      );
+      socket.onmessage = (event) => {
+        setMarket(JSON.parse(event.data));
+        console.log(event.data);
+        setLastUpdate(Date.now());
+      };
+    }
 
-   const socket = useSocket();
-    useEffect(() => {
-        if (socket) {
-          socket.send(
-            JSON.stringify({
-              type: "SUBSCRIBE_MARKET",
-              payload: { marketId: marketId },
-            })
-          );
-          socket.onmessage = (event) => {
-            setMarket(JSON.parse(event.data));
-            console.log(event.data);
-            setLastUpdate(Date.now());
+    return () => {
+      if (socket) {
+        socket.send(
+          JSON.stringify({
+            type: "UNSUBSCIBE_MARKET",
+            payload: {
+              marketId: marketId,
+            },
+          })
+        );
+      }
+    };
+  }, [market, socket]);
 
-          };
-        }
-    
-        return () => {
-          if (socket) {
-            socket.send(
-              JSON.stringify({
-                type: "UNSUBSCIBE_MARKET",
-                payload: {
-                  marketId: marketId,
-                },
-              })
-            );
-          }
-        };
-      }, [market, socket]);
-  // Update price when selection changes
+
   useEffect(() => {
     setPrice(yesSelected ? topYesPrice : topNoPrice);
   }, [yesSelected, topYesPrice, topNoPrice]);
@@ -150,8 +165,6 @@ useEffect(()=>{
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-6">
-     
-              
               <div className="hidden lg:flex items-center space-x-8 text-sm">
                 <div className="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg border">
                   <BarChart3 className="w-4 h-4 text-gray-600" />
@@ -161,7 +174,9 @@ useEffect(()=>{
                 <div className="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg border">
                   <Users className="w-4 h-4 text-gray-600" />
                   <span className="text-gray-600">Volume:</span>
-                  <span className="font-mono font-bold">{totalQty.toLocaleString()}</span>
+                  <span className="font-mono font-bold">
+                    {totalQty.toLocaleString()}
+                  </span>
                 </div>
                 <div className="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg border">
                   <Target className="w-4 h-4 text-gray-600" />
@@ -172,7 +187,7 @@ useEffect(()=>{
                 </div>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-3">
               <div className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-green-600 px-4 py-2 rounded-full border-2 border-green-700 shadow-lg">
                 <div className="w-2 h-2 bg-white rounded-full "></div>
@@ -194,21 +209,25 @@ useEffect(()=>{
                 <h2 className="text-5xl font-bold mb-2 text-black font-mono transition-all duration-500 hover:scale-110">
                   {probability.toFixed(1)}%
                 </h2>
-                <p className="text-lg text-gray-600 font-semibold">Implied Probability</p>
+                <p className="text-lg text-gray-600 font-semibold">
+                  Implied Probability
+                </p>
               </div>
-              
+
               <div className="relative w-full bg-gray-200 rounded-full h-4 border-2 border-gray-300 overflow-hidden shadow-inner">
-                <div 
+                <div
                   className="bg-gradient-to-r from-black to-gray-800 h-full rounded-full transition-all duration-1000 ease-out relative overflow-hidden"
                   style={{ width: `${probability}%` }}
                 >
                   <div className="absolute inset-0 bg-white opacity-20 "></div>
                 </div>
               </div>
-              
+
               <div className="mt-4 flex justify-between text-sm font-mono text-gray-600">
                 <span>0%</span>
-                <span className="font-bold text-black">{probability.toFixed(1)}%</span>
+                <span className="font-bold text-black">
+                  {probability.toFixed(1)}%
+                </span>
                 <span>100%</span>
               </div>
             </div>
@@ -225,11 +244,13 @@ useEffect(()=>{
                 <h3 className="text-xl font-bold text-black">YES Orders</h3>
                 <div className="ml-auto flex items-center space-x-2">
                   <div className="px-3 py-1 bg-green-100 border border-green-300 rounded-full">
-                    <span className="text-sm font-mono font-bold text-green-700">₹{topYesPrice}</span>
+                    <span className="text-sm font-mono font-bold text-green-700">
+                      ₹{topYesPrice}
+                    </span>
                   </div>
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <div className="grid grid-cols-3 gap-4 text-xs font-bold text-gray-500 border-b border-gray-200 pb-3 mb-4">
                   <span>PRICE</span>
@@ -240,9 +261,9 @@ useEffect(()=>{
                   <div
                     key={idx}
                     className="grid grid-cols-3 gap-4 items-center py-3 px-4 rounded-lg hover:bg-gray-50 transition-all duration-300 hover:scale-[1.02] cursor-pointer relative overflow-hidden border border-gray-100 group hover:border-green-300 hover:shadow-md"
-                    style={{ 
+                    style={{
                       animationDelay: `${idx * 100}ms`,
-                      animation: 'fadeInUp 0.5s ease-out forwards'
+                      animation: "fadeInUp 0.5s ease-out forwards",
                     }}
                   >
                     <span className="text-black font-bold font-mono z-10 transition-colors duration-300 group-hover:text-green-600 text-sm">
@@ -252,11 +273,16 @@ useEffect(()=>{
                       {order.totalQty.toLocaleString()}
                     </span>
                     <span className="text-right text-gray-700 font-mono z-10 text-sm">
-                      ₹{(parseFloat(order.price) * order.totalQty).toLocaleString()}
+                      ₹
+                      {(
+                        parseFloat(order.price) * order.totalQty
+                      ).toLocaleString()}
                     </span>
                     <div
                       className="absolute left-0 top-0 h-full bg-gradient-to-r from-green-400 to-green-500 opacity-20 transition-all duration-700 group-hover:opacity-30 rounded-lg"
-                      style={{ width: `${(order.totalQty / maxYesTotal) * 100}%` }}
+                      style={{
+                        width: `${(order.totalQty / maxYesTotal) * 100}%`,
+                      }}
                     />
                   </div>
                 ))}
@@ -272,11 +298,13 @@ useEffect(()=>{
                 <h3 className="text-xl font-bold text-black">NO Orders</h3>
                 <div className="ml-auto flex items-center space-x-2">
                   <div className="px-3 py-1 bg-red-100 border border-red-300 rounded-full">
-                    <span className="text-sm font-mono font-bold text-red-700">₹{topNoPrice}</span>
+                    <span className="text-sm font-mono font-bold text-red-700">
+                      ₹{topNoPrice}
+                    </span>
                   </div>
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <div className="grid grid-cols-3 gap-4 text-xs font-bold text-gray-500 border-b border-gray-200 pb-3 mb-4">
                   <span>PRICE</span>
@@ -287,9 +315,9 @@ useEffect(()=>{
                   <div
                     key={idx}
                     className="grid grid-cols-3 gap-4 items-center py-3 px-4 rounded-lg hover:bg-gray-50 transition-all duration-300 hover:scale-[1.02] cursor-pointer relative overflow-hidden border border-gray-100 group hover:border-red-300 hover:shadow-md"
-                    style={{ 
+                    style={{
                       animationDelay: `${idx * 100}ms`,
-                      animation: 'fadeInUp 0.5s ease-out forwards'
+                      animation: "fadeInUp 0.5s ease-out forwards",
                     }}
                   >
                     <span className="text-black font-bold font-mono z-10 transition-colors duration-300 group-hover:text-red-600 text-sm">
@@ -299,11 +327,16 @@ useEffect(()=>{
                       {order.totalQty.toLocaleString()}
                     </span>
                     <span className="text-right text-gray-700 font-mono z-10 text-sm">
-                      ₹{(parseFloat(order.price) * order.totalQty).toLocaleString()}
+                      ₹
+                      {(
+                        parseFloat(order.price) * order.totalQty
+                      ).toLocaleString()}
                     </span>
                     <div
                       className="absolute right-0 top-0 h-full bg-gradient-to-l from-red-400 to-red-500 opacity-20 transition-all duration-700 group-hover:opacity-30 rounded-lg"
-                      style={{ width: `${(order.totalQty / maxNoTotal) * 100}%` }}
+                      style={{
+                        width: `${(order.totalQty / maxNoTotal) * 100}%`,
+                      }}
                     />
                   </div>
                 ))}
@@ -313,7 +346,7 @@ useEffect(()=>{
         </div>
 
         {/* Enhanced Trading Panel */}
-        <div className="w-full lg:w-96">
+        { userId ? ( <div className="w-full lg:w-96">
           <div className="bg-white border-2 border-black rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 lg:sticky lg:top-6">
             <h3 className="text-xl font-bold mb-6 flex items-center space-x-3 text-black">
               <div className="p-2 bg-black rounded-full">
@@ -362,8 +395,8 @@ useEffect(()=>{
               <button
                 onClick={() => setYesSelected(true)}
                 className={`py-5 rounded-xl font-bold transition-all duration-300 transform hover:scale-[1.05] active:scale-[0.98] border-2 relative overflow-hidden group ${
-                  yesSelected 
-                    ? "bg-green-500 text-white border-green-500 shadow-lg shadow-green-200" 
+                  yesSelected
+                    ? "bg-green-500 text-white border-green-500 shadow-lg shadow-green-200"
                     : "bg-white text-black border-black hover:bg-gray-50 hover:border-green-500 hover:shadow-md"
                 }`}
               >
@@ -376,8 +409,8 @@ useEffect(()=>{
               <button
                 onClick={() => setYesSelected(false)}
                 className={`py-5 rounded-xl font-bold transition-all duration-300 transform hover:scale-[1.05] active:scale-[0.98] border-2 relative overflow-hidden group ${
-                  !yesSelected 
-                    ? "bg-red-500 text-white border-red-500 shadow-lg shadow-red-200" 
+                  !yesSelected
+                    ? "bg-red-500 text-white border-red-500 shadow-lg shadow-red-200"
                     : "bg-white text-black border-black hover:bg-gray-50 hover:border-red-500 hover:shadow-md"
                 }`}
               >
@@ -399,7 +432,9 @@ useEffect(()=>{
                   onClick={() => handleIncrement(-0.5, setPrice)}
                   className="w-14 h-14 bg-white hover:bg-gray-100 transition-all duration-200 transform hover:scale-110 active:scale-95 flex items-center justify-center font-bold text-xl border-r-2 border-black group"
                 >
-                  <span className="group-hover:scale-125 transition-transform duration-200">−</span>
+                  <span className="group-hover:scale-125 transition-transform duration-200">
+                    −
+                  </span>
                 </button>
                 <div className="flex-1 text-center font-bold text-xl font-mono py-4 bg-white transition-all duration-300 hover:bg-gray-50">
                   ₹{price.toFixed(1)}
@@ -408,7 +443,9 @@ useEffect(()=>{
                   onClick={() => handleIncrement(0.5, setPrice)}
                   className="w-14 h-14 bg-white hover:bg-gray-100 transition-all duration-200 transform hover:scale-110 active:scale-95 flex items-center justify-center font-bold text-xl border-l-2 border-black group"
                 >
-                  <span className="group-hover:scale-125 transition-transform duration-200">+</span>
+                  <span className="group-hover:scale-125 transition-transform duration-200">
+                    +
+                  </span>
                 </button>
               </div>
             </div>
@@ -425,13 +462,16 @@ useEffect(()=>{
                 className="w-full px-4 py-4 rounded-xl bg-white border-2 border-black focus:outline-none focus:ring-4 focus:ring-gray-200 focus:border-gray-400 transition-all duration-300 font-mono transform focus:scale-[1.02] shadow-md hover:shadow-lg"
                 placeholder="Enter number of shares..."
               />
-              
+
               <div className="flex items-center justify-between mt-4">
                 <div className="text-xs text-gray-600 font-mono bg-gray-50 px-3 py-2 rounded-lg border">
-                  Available: {yesSelected 
-                    ? yesOrders.find(o => parseFloat(o.price) === price)?.totalQty || 0
-                    : noOrders.find(o => parseFloat(o.price) === price)?.totalQty || 0
-                  } shares
+                  Available:{" "}
+                  {yesSelected
+                    ? yesOrders.find((o) => parseFloat(o.price) === price)
+                        ?.totalQty || 0
+                    : noOrders.find((o) => parseFloat(o.price) === price)
+                        ?.totalQty || 0}{" "}
+                  shares
                 </div>
                 <div className="flex space-x-2">
                   <button
@@ -489,13 +529,32 @@ useEffect(()=>{
               ) : (
                 `${activeSide === SIDE.BUY ? "PLACE BUY ORDER" : "PLACE SELL ORDER"}`
               )}
-              
+
               {shares > 0 && !isLoading && (
                 <div className="absolute inset-0 bg-white opacity-0 hover:opacity-10 transition-opacity duration-300 rounded-xl"></div>
               )}
             </button>
           </div>
-        </div>
+        </div>):   <div className="w-full lg:w-96">
+    <div className="bg-white border-2 border-black rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 lg:sticky lg:top-6 flex flex-col items-center justify-center h-full min-h-[500px]">
+      <div className="p-4 bg-yellow-100 border-2 border-yellow-400 rounded-full mb-6">
+        <Users className="w-10 h-10 text-yellow-700" />
+      </div>
+      <h3 className="text-xl font-bold mb-3 text-center text-black">
+        Login Required
+      </h3>
+      <p className="text-gray-600 text-center mb-8 max-w-xs">
+        You need to be logged in to place trades in this market.
+      </p>
+      <button
+        onClick={() => router.push("/login")}
+        className="w-full py-4 rounded-xl font-bold text-lg transition-all duration-300 transform border-2 bg-black text-white border-black hover:bg-gray-800 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl"
+      >
+        Go to Login
+      </button>
+    </div>
+  </div>
+           }
       </div>
 
       {/* CSS Animations */}

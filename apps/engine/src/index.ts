@@ -16,6 +16,8 @@ app.use(cors());
 
 
 const redisInstance =Manager.getInstance();
+     await redisInstance.init()
+
 
 redisInstance.listenForOrders().catch((err)=>{
     console.log("Error in listening for orders " + err);

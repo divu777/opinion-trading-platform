@@ -13,6 +13,8 @@ export async function GET(_:NextRequest,{params}:{params:Promise<{userId:string}
     }
 
     const redisclient = RedisManager.getInstance()
+         await redisclient.init()
+
 
     // const eventId = await redisclient.pushToEngine({userId},"GET_USER_BALANCE");
 

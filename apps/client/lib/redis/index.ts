@@ -14,9 +14,12 @@ export class RedisManager {
       url: process.env.REDIS_URL,
     });
     this.pubsubclient= this.client.duplicate()
-    this.client.connect();
-    this.pubsubclient.connect();
+
   }
+  async init() {
+  await this.client.connect();
+  await this.pubsubclient.connect();
+}
 
   static getInstance() {
     if (!RedisManager.instance) {

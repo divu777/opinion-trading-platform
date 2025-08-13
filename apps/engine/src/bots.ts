@@ -1,10 +1,12 @@
 import { createClient } from "redis";
-import { Manager } from "./redis/oldApproach";
+import { Manager } from "./redis/currApproach";
 import { randomUUIDv7 } from "bun";
 
 
 export const getmarkets=async()=>{
     const instance = Manager.getInstance();
+         await instance.init()
+
 
 const {payload} = instance.getAllMarkets({type:"GET_ALL_MARKETS",eventId:"ggg",payload:{}})
 

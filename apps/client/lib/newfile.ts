@@ -31,6 +31,8 @@ export const authOptions : AuthOptions ={
         console.log(JSON.stringify(validInputs))
 
         const redisclient = RedisManager.getInstance()
+        await redisclient.init()
+
 
         const uniqueId = randomUUID();
 

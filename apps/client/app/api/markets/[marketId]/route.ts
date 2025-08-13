@@ -23,6 +23,8 @@ export async function GET(
     }
 
     const redisClient = RedisManager.getInstance();
+            await redisClient.init()
+
 
     const uniqueId = randomUUID();
     const promise = redisClient.subscribeToEvent(uniqueId);
@@ -44,6 +46,8 @@ export async function GET(
   }
 
   const redisclient = RedisManager.getInstance();
+  await redisclient.init()
+
 
   // const eventId = await redisclient.pushToEngine({marketId},"GET_MARKET_ORDERBOOK")
 

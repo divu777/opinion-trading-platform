@@ -14,6 +14,8 @@ export async function GET(
   }
 
   const redisclient = RedisManager.getInstance();
+       await redisclient.init()
+
 
   // const eventId = await redisclient.pushToEngine({userId},"GET_USER_STOCK_BALANCE");
 

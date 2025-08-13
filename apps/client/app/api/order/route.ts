@@ -17,6 +17,8 @@ export const POST = async (req: Request) => {
       });
     }
     const redisInstance = RedisManager.getInstance();
+         await redisInstance.init()
+
 ;
 
     const uniqueId = randomUUID();

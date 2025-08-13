@@ -7,6 +7,7 @@ export const  GET = async(_:NextRequest)=>{
     try {
 
         const redisclient =  RedisManager.getInstance();
+        await redisclient.init()
 
         const uniqueId = randomUUID()
         const promise =  redisclient.subscribeToEvent(uniqueId);
@@ -44,6 +45,8 @@ export async function POST (req:NextRequest){
      }
  
      const redisclient = RedisManager.getInstance();
+     await redisclient.init()
+
  
      // const eventId = await redisclient.pushToEngine(body,"CREATE_MARKET")
  

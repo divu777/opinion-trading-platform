@@ -23,7 +23,6 @@ export class Manager {
     this.client = createClient({
       url: process.env.REDIS_URL,
     });
-    this.client.connect();
     this.OrderBook = {};
     this.User_Balances = {};
     this.Stock_Balances = {};
@@ -31,6 +30,10 @@ export class Manager {
     this.Market_Info = {};
     this.populateAdminBalance();
     // setInterval(this.printOrderBook.bind(this), 30000);
+  }
+
+  async init(){
+    await this.client.connect();
   }
 
   populateAdminBalance() {

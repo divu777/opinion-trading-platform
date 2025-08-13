@@ -16,6 +16,7 @@ export class RedisManager {
     }
     return this.instance;
   }
+  
 
   subscribeToMarket(marketId:string){
     this.redisClient.subscribe(marketId,(data)=>{

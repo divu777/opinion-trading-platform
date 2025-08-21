@@ -24,7 +24,7 @@ apps/
 
 - **Frontend**: Next.js, NextAuth.js
 - **Backend**: Bun, TypeScript
-- **Queue**: In-memory
+- **Queue**: Redis (Docker container)
 - **Storage**: In-memory (V1)
 - **Deploy**: Docker + CI/CD to DigitalOcean
 - **Monorepo**: Turborepo
@@ -53,4 +53,3 @@ Set up `.env` files in each app directory with:
 
 - V1 uses in-memory storage (no database)
 - All data resets on restart
-- Queue is in-memory, not persistent

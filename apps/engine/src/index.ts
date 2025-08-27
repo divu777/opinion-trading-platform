@@ -14,16 +14,19 @@ app.use(cors());
 
 
 
+async function main(){
 
-const redisInstance =Manager.getInstance();
-     await redisInstance.init()
+    const redisInstance =Manager.getInstance();
+    await redisInstance.init()
+    
+    
+    redisInstance.listenForOrders().catch((err)=>{
+        console.log("Error in listening for orders " + err);
+    })
+}
 
 
-redisInstance.listenForOrders().catch((err)=>{
-    console.log("Error in listening for orders " + err);
-})
-
-
+main()
 // setInterval(getmarkets,15000)
 
 

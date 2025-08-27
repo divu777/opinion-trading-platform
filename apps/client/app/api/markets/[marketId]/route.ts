@@ -23,7 +23,7 @@ export async function GET(
     }
 
     const redisClient = RedisManager.getInstance();
-            await redisClient.init()
+    await redisClient.init()
 
 
     const uniqueId = randomUUID();

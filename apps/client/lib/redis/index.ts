@@ -5,7 +5,7 @@ import type { RedisClientType } from "redis";
 
 export class RedisManager {
   private client: RedisClientType;
-    private pubsubclient: RedisClientType;
+  private pubsubclient: RedisClientType;
 
   private static instance: RedisManager;
 
@@ -13,13 +13,20 @@ export class RedisManager {
     this.client = createClient({
       url: process.env.REDIS_URL,
     });
-    this.pubsubclient= this.client.duplicate()
-
+    this.pubsubclient = this.client.duplicate();
   }
+
   async init() {
-  await this.client.connect();
-  await this.pubsubclient.connect();
-}
+    if (!this.client.isOpen) {
+      await this.client.connect();
+    }
+
+    if (!this.pubsubclient.isOpen) {
+      await this.pubsubclient.connect();
+    }
+
+    console.log("Both clients are connected");
+  }
 
   static getInstance() {
     if (!RedisManager.instance) {
@@ -28,10 +35,9 @@ export class RedisManager {
     return RedisManager.instance;
   }
 
-  async pushToEngine(data: any, type: string, event?:string): Promise<string> {
-  
+  async pushToEngine(data: any, type: string, event?: string): Promise<string> {
     const uniqueId = randomUUID();
-    const eventName = event?event:uniqueId
+    const eventName = event ? event : uniqueId;
     await this.client.lPush(
       "order.queue",
       JSON.stringify({ type, eventId: eventName, payload: data })
@@ -42,8 +48,8 @@ export class RedisManager {
 
   async subscribeToEvent(eventName: string): Promise<any> {
     return new Promise(async (resolve, reject) => {
-      const timeout = setTimeout(async() => {
-        console.log("timeout called")
+      const timeout = setTimeout(async () => {
+        console.log("timeout called");
         await this.pubsubclient.unsubscribe(eventName);
         reject({ message: "no response" });
       }, 5000);

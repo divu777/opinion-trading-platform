@@ -33,7 +33,13 @@ export class Manager {
   }
 
   async init(){
-    await this.client.connect();
+    if(this.client.isOpen){
+      console.log("already connected")
+      return
+    }else{
+
+      await this.client.connect();
+    }
   }
 
   populateAdminBalance() {

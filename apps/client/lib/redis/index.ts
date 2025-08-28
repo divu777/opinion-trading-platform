@@ -35,6 +35,13 @@ export class RedisManager {
     return RedisManager.instance;
   }
 
+/* 
+Any one is who is trying to understand , the basic issue was before the redis could subscribe to the clientId we miss the events.
+I know might sound like JS can't be that fast but it is so rather than pushing to queue first and then subscribing we subscribe to the event 
+first and then push and the confusing code for push to engine you see optional for event was i did to now see all routes to get all red.
+
+P.S - If someone wants to submit a PR for this for sure do just make sure all routes work 👍🏻
+*/
   async pushToEngine(data: any, type: string, event?: string): Promise<string> {
     const uniqueId = randomUUID();
     const eventName = event ? event : uniqueId;
@@ -54,10 +61,7 @@ export class RedisManager {
         reject({ message: "no response" });
       }, 5000);
 
-      console.log("we are here1");
       await this.pubsubclient.subscribe(eventName, (message) => {
-        console.log("we are here2");
-
         clearTimeout(timeout);
         const data = JSON.parse(message);
 

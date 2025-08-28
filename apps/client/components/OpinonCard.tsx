@@ -15,7 +15,7 @@ import { useSocket } from "@/lib/socket/useSocket";
 import { useSession } from "next-auth/react";
 import { data, div } from "framer-motion/client";
 import { useRouter } from "next/navigation";
-import { authOptions } from "@/lib/newfile";
+import { authOptions } from "@/lib/auth";
 
 interface Order {
   price: string;

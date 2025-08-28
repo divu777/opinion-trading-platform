@@ -68,6 +68,11 @@ export const CreateNewUserSchema = z.object({
   userId: z.string().min(4).max(15, { message: "Invalid user Id" }),
 });
 
+export const ResolveMarketSchema = z.object({
+  marketId:z.string(),
+  winner: z.enum(["YES","NO"])
+})
+
 export type LimitOrderRequest = z.infer<typeof LimitOrderSchema>;
 
 export type CreateUserType = z.infer<typeof CreateNewUserSchema>;
@@ -188,10 +193,9 @@ export type Market_Info = Record<
   }
 >;
 
-// Add locked balances to prevent double spending
 export type UserBalances = {
   [userId: string]: {
     balance: number;
-    locked: number; // Amount locked in pending orders
+    locked: number; 
   };
 };

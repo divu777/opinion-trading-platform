@@ -50,3 +50,16 @@ export const getSearchInputResult = async(query:string)=>{
 }
 
 
+export const resolveMarket = async(marketId:string,resolution:string)=>{
+  try {
+      const response = await axios.post(`http://localhost:3000/api/resolve/${marketId}`,{
+        marketId,
+        winner:resolution.toUpperCase()
+      });
+
+      console.log(JSON.stringify(response))
+      return response.data
+    } catch (err) {
+      console.error(err);
+    }
+}

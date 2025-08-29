@@ -4,6 +4,10 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "start:web": "cd ./apps/client && bun run start",
+    "start:backend": "cd ./apps/engine && bun run start",
+    "start:ws":"cd ./apps/web-socket && bun run start",
+    "start":"bun run start:web && bun run start:backend && bun run start:ws",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types"

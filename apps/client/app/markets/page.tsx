@@ -1,9 +1,9 @@
+export const dynamic = "force-dynamic";
 import { fetchAllMarkets } from '@/lib/utils';
 import React from 'react'
 import Image from 'next/image';
 import sidebaner from '@/public/op3.jpg';
 import Markets from '@/components/Markets';
-import { StartMarketType } from '@repo/common';
 
 
 

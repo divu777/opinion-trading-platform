@@ -3,7 +3,7 @@ module.exports = {
     {
       name: "nextjs-app",
       cwd: "./apps/nextjs",
-      script: "pnpm",
+      script: "bun",
       args: "start", // runs next start (prod mode)
       env: {
         NODE_ENV: "production",

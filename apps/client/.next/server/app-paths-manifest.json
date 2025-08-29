@@ -1,17 +1,1 @@
-{
-  "/_not-found/page": "app/_not-found/page.js",
-  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
-  "/api/markets/[marketId]/route": "app/api/markets/[marketId]/route.js",
-  "/api/user/balance/[userId]/route": "app/api/user/balance/[userId]/route.js",
-  "/api/user/money/[userId]/route": "app/api/user/money/[userId]/route.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/api/order/route": "app/api/order/route.js",
-  "/api/resolve/[marketId]/route": "app/api/resolve/[marketId]/route.js",
-  "/api/markets/route": "app/api/markets/route.js",
-  "/(auth)/login/page": "app/(auth)/login/page.js",
-  "/markets/[marketId]/page": "app/markets/[marketId]/page.js",
-  "/page": "app/page.js",
-  "/profile/page": "app/profile/page.js",
-  "/markets/page": "app/markets/page.js",
-  "/(protected)/dashboard/page": "app/(protected)/dashboard/page.js"
-}
+{}

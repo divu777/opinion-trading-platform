@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: "nextjs-app",
-      cwd: "./apps/nextjs",
+      cwd: "./apps/client",
       script: "bun",
       args: "start", // runs next start (prod mode)
       env: {
@@ -12,7 +12,7 @@ module.exports = {
     },
     {
       name: "backend",
-      cwd: "./apps/backend",
+      cwd: "./apps/engine",
       script: "bun",
       args: "start", // assuming package.json has "start": "node dist/index.js" but you run via bun
       env: {

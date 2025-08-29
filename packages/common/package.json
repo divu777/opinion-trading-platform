@@ -14,5 +14,9 @@
   },
   "dependencies": {
     "zod": "^3.24.4"
+  },
+  "scripts": {
+        "start": "echo 'no-op'"
+
   }
 }

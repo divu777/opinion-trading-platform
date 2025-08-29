@@ -10,7 +10,8 @@
     "typescript": "^5"
   },
   "scripts": {
-    "dev": "bun src/index.ts"
+    "dev": "bun src/index.ts",
+    "start": "bun src/index.ts"
   },
   "dependencies": {
     "@repo/common": "*",

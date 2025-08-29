@@ -7,12 +7,12 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 export const fetchAllMarkets = async () => {
-  const response = await axios.get("http://localhost:3000/api/markets")
+  const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/markets`)
   return response.data.markets;
 }
 
 export const addnewMarket = async (newMarket:StartMarketType)=>{
-  const response = await axios.post(`http://localhost:3000/api/markets`,{
+  const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/markets`,{
     
       ...newMarket
 
@@ -22,7 +22,7 @@ export const addnewMarket = async (newMarket:StartMarketType)=>{
 
 export const orderRequest = async(data:LimitOrderRequest)=>{
   console.log("data ++ ++++ ++"+JSON.stringify(data))
-  const response = await axios.post(`http://localhost:3000/api/order`,{
+  const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/order`,{
     ...data
   })
 
@@ -32,10 +32,10 @@ export const orderRequest = async(data:LimitOrderRequest)=>{
 }
 
 export const getUserData= async(name:string)=>{
-  const response = await axios.get("http://localhost:3000/api/user/balance/"+name);
+  const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user/balance/`+name);
   console.log(JSON.stringify(response.data));
 
-    const response2 = await axios.get("http://localhost:3000/api/user/money/"+name);
+    const response2 = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user/money/`+name);
   console.log(JSON.stringify(response2.data));
 
   return {res1:response.data,res2:response2.data}
@@ -43,7 +43,7 @@ export const getUserData= async(name:string)=>{
 
 
 export const getSearchInputResult = async(query:string)=>{
-  const response = await axios.get(`http://localhost:3000/api/markets/search-${query}`);
+  const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/markets/search-${query}`);
 
   console.log(JSON.stringify(response.data));
   return response.data
@@ -52,7 +52,7 @@ export const getSearchInputResult = async(query:string)=>{
 
 export const resolveMarket = async(marketId:string,resolution:string)=>{
   try {
-      const response = await axios.post(`http://localhost:3000/api/resolve/${marketId}`,{
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/resolve/${marketId}`,{
         marketId,
         winner:resolution.toUpperCase()
       });

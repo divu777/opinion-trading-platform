@@ -16,16 +16,16 @@ node_modules
 coverage
 
 # Turbo
-# .turbo
+ .turbo
 
 # Vercel
 .vercel
 
 # Build Outputs
-# .next/
-# out/
-# build
-# dist
+.next/
+out/
+build
+dist
 
 
 # Debug

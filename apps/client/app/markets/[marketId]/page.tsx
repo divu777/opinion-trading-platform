@@ -21,7 +21,7 @@ type MarketResponse={
  
 
 const getMarket = async (marketId: string): Promise<MarketResponse> => {
-  const response = await axios.get(`http://localhost:3000/api/markets/${marketId}`);
+  const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/markets/${marketId}`);
   return response.data;
 };
 

@@ -23,7 +23,7 @@ module.exports = {
     {
       name: "web-socket",
       cwd: "./apps/web-socket",
-      script: "node",
+      script: "bun",
       args: "start", // after TS build outputs dist/index.js
       env: {
         NODE_ENV: "production",

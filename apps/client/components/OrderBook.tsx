@@ -42,7 +42,6 @@ const OpinionOrderBook = ({
       );
       socket.onmessage = (event) => {
         setMarket(JSON.parse(event.data));
-        console.log(event.data);
       };
     }
 
@@ -60,10 +59,8 @@ const OpinionOrderBook = ({
     };
   }, [market, socket]);
 
-  console.log("yes order -----> " + JSON.stringify(marketData.Yes));
 
   const yesOrders = marketData.Yes;
-  console.log("yes order -----> " + JSON.stringify(yesOrders));
   const noOrders = marketData.No;
 
   const maxYesTotal = Math.max(...yesOrders.map((o) => o.totalQty), 1);

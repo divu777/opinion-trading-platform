@@ -6,7 +6,6 @@ import { randomUUID } from 'crypto';
 export const POST  =async(req:NextRequest,{params}:{params:Promise<{marketId:string}>})=>{
     const marketId = (await params).marketId
     try {
-        console.log(marketId)
        const body = await req.json()
 
        const validinputs = ResolveMarketSchema.safeParse(body)

@@ -208,7 +208,6 @@ export class Manager {
       }
     }
 
-    // Clear all stock positions for this market
     for (const userId in this.Stock_Balances) {
       if (this.Stock_Balances[userId]![marketId]) {
         delete this.Stock_Balances[userId]![marketId];
@@ -220,7 +219,6 @@ export class Manager {
     const market = this.OrderBook[marketId];
     if (!market) return;
 
-    // Cancel all buy and sell orders, refund locked amounts
     for (const side of ["YES", "NO"] as const) {
       for (const orderType of ["BUY", "SELL"] as const) {
         const bookSide = market[side][orderType];
@@ -283,14 +281,25 @@ export class Manager {
       const markets = Object.keys(this.OrderBook);
       const regex = new RegExp(query, "i");
 
-      const filter = markets.filter((market) => regex.test(market));
+      const filter = markets.filter((market) => regex.test(this.Market_Info[market]!.title!));
+
+      const filteredMarkets = filter.map((marketId)=>{
+        const data = this.Market_Info[marketId]
+        return {
+            marketId,
+            title:data?.title,
+            description:data?.description,
+            YES:data?.YES,
+            NO:data?.NO
+        }
+    })
 
       return {
         eventId: data.eventId,
         payload: {
           message: "Fetched query search results",
           success: filter.length > 0,
-          data: filter,
+          data: filteredMarkets,
         },
       };
     } catch (error) {

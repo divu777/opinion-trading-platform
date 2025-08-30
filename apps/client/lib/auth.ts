@@ -18,17 +18,14 @@ export const authOptions : AuthOptions ={
         password : { label:"password",type:"password"}
       },
       async authorize(credentials){
-        console.log("here");
 
         const validInputs = userSignUpSchema.safeParse(credentials)
 
         if(!validInputs.success){
-          console.log("krsna")
           return null
         }
 
         const { username , password } = validInputs.data
-        console.log(JSON.stringify(validInputs))
 
         const redisclient = RedisManager.getInstance()
         await redisclient.init()
@@ -46,7 +43,6 @@ export const authOptions : AuthOptions ={
           return null
         }
 
-        console.log("responssee")
 
         return {id:username,name:username}
       }
@@ -58,17 +54,13 @@ export const authOptions : AuthOptions ={
   },
   callbacks:{
     async jwt({token,user}:any){
-      console.log(JSON.stringify(token) + "------"+JSON.stringify(user)+"tokeeee")
       if(user){
-        console.log("here1")
         token.id= user.id
         token.name= user.name
       }
-      console.log(JSON.stringify(token))
       return token
     },
     async session({session,token}:any){
-      console.log(JSON.stringify(session) + "------"+JSON.stringify(token)+"sess")
 
       session.user.id = token.id
       session.user.name = token.name

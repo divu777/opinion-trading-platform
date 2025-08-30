@@ -7,7 +7,6 @@ import { getmarkets } from './bots';
 
 const app=e();
 const PORT = process.env.PORT ?? 8085
-console.log( typeof PORT)
 app.use(e.json());
 app.use(cors());
 

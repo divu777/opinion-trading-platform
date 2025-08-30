@@ -17,12 +17,11 @@ const interval = useRef<ReturnType<typeof setTimeout> | null>(null);
     }
 
     interval.current = setTimeout(async() => {
-      console.log("input value "+value)
       if(value.trim()){
 
-        const res = await fetch(`/api/markets/search?q=${value}`);
+        const res = await fetch(`/api/markets/search?query=${value}`);
         const result = await res.json();
-        setMarketData(result.success ? result.data.data : []);
+        setMarketData(result.success ? result.data : []);
       }else{
         setMarketData(markets)
       }

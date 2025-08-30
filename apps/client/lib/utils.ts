@@ -21,22 +21,18 @@ export const addnewMarket = async (newMarket:StartMarketType)=>{
 }
 
 export const orderRequest = async(data:LimitOrderRequest)=>{
-  console.log("data ++ ++++ ++"+JSON.stringify(data))
   const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/order`,{
     ...data
   })
 
-  console.log(JSON.stringify(response.data))
 
   return response.data
 }
 
 export const getUserData= async(name:string)=>{
   const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user/balance/`+name);
-  console.log(JSON.stringify(response.data));
 
     const response2 = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user/money/`+name);
-  console.log(JSON.stringify(response2.data));
 
   return {res1:response.data,res2:response2.data}
 }
@@ -45,7 +41,6 @@ export const getUserData= async(name:string)=>{
 export const getSearchInputResult = async(query:string)=>{
   const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/markets/search-${query}`);
 
-  console.log(JSON.stringify(response.data));
   return response.data
 }
 
@@ -57,7 +52,6 @@ export const resolveMarket = async(marketId:string,resolution:string)=>{
         winner:resolution.toUpperCase()
       });
 
-      console.log(JSON.stringify(response))
       return response.data
     } catch (err) {
       console.error(err);

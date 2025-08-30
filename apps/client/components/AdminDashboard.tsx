@@ -21,7 +21,6 @@ const AdminDashboard = ({
 
   const handleAddMarket = async () => {
     const response = await addnewMarket(newMarket);
-    console.log(JSON.stringify(response));
 
     setMarkets((prev) => [...prev, newMarket]);
     setNewMarket({

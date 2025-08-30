@@ -81,7 +81,6 @@ const OpinionOrderBook = ({
   };
 
   const handleTrade = async () => {
-    console.log("heeeeee");
     const response = await orderRequest({
       userId,
       ticket_type: yesSelected ? "YES" : "NO",
@@ -134,7 +133,6 @@ const OpinionOrderBook = ({
       );
       socket.onmessage = (event) => {
         setMarket(JSON.parse(event.data));
-        console.log(event.data);
         setLastUpdate(Date.now());
       };
     }

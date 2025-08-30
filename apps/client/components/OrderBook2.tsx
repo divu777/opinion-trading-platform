@@ -56,14 +56,14 @@ enum SIDE {
 
     const response = await orderRequest({userId:'divu',ticket_type:yesSelected?"YES":"NO",order_type:SIDE[activeSide],quantity:shares,price,marketId})
 
-    console.log({
-      side: SIDE[activeSide],
-      position: yesSelected ? "Yes" : "No",
-      price,
-      shares,
-      total: (shares * (price)),
-      toWin: (shares * (10-price+price))
-    });
+    // console.log({
+    //   side: SIDE[activeSide],
+    //   position: yesSelected ? "Yes" : "No",
+    //   price,
+    //   shares,
+    //   total: (shares * (price)),
+    //   toWin: (shares * (10-price+price))
+    // });
   };
 
 
@@ -80,7 +80,6 @@ enum SIDE {
         );
         socket.onmessage = (event) => {
           setMarket(JSON.parse(event.data));
-          console.log(event.data);
         };
       }
   

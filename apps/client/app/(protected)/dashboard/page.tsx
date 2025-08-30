@@ -6,7 +6,6 @@ const page = async() => {
 
   const markets = await fetchAllMarkets()
 
-  console.log(markets)
   return (
     <div>
       <AdminDashboard marketsData={markets}/>

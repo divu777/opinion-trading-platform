@@ -8,11 +8,9 @@ export async function GET(
   { params }: { params: Promise<{ marketId: string }> }
 ) {
   const marketId = (await params).marketId;
-  console.log(marketId + "mrrr");
 
-  if (marketId.startsWith("search-")) {
-    const query = marketId.split("search-")[1];
-
+  if (marketId.startsWith("search")) {
+    const query = _.nextUrl.searchParams.get("query");
     const validInput = QueryMarketSchema.safeParse({ query });
 
     if (!validInput.success) {

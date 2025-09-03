@@ -5,7 +5,7 @@ export const useSocket = () => {
   const [ws, setWs] = useState<null | WebSocket>();
 
   useEffect(() => {
-    const socket = new WebSocket("ws://localhost:4000");
+    const socket = new WebSocket(process.env.NEXT_PUBLIC_WEBSOCKET_URL??"ws://localhost:4000");
     socket.onopen = () => {
       console.log("connected");
       setWs(socket);

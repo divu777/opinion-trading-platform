@@ -8,7 +8,6 @@ import { useState,useEffect } from "react";
 const Navbar = () => {
   const [authorized,setAuthorized] = useState(false)
   const { data: session, status } = useSession()
-  console.log("========="+status)
   useEffect(()=>{
     if(status==='authenticated'){
       setAuthorized(true)

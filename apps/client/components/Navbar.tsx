@@ -1,7 +1,19 @@
+'use client'
 import { Activity } from 'lucide-react'
 import React from 'react'
+import { useSession } from "next-auth/react"
+import { useState,useEffect } from "react";
+
 
 const Navbar = () => {
+  const [authorized,setAuthorized] = useState(false)
+  const { data: session, status } = useSession()
+  console.log("========="+status)
+  useEffect(()=>{
+    if(status==='authenticated'){
+      setAuthorized(true)
+    }
+  },[session])
   return (
     <nav className="relative top-0 h-16 w-full bg-white text-zinc-900 flex items-center justify-between px-6 border-b border-zinc-300 shadow-sm">
       
@@ -21,9 +33,9 @@ const Navbar = () => {
         <a href="/markets" className="hover:text-black transition-colors duration-150">
           Markets
         </a>
-        <a href="/profile" className="hover:text-black transition-colors duration-150">
+      { authorized && <a href="/profile" className="hover:text-black transition-colors duration-150">
           Profile
-        </a>
+        </a>}
       </div>
     </nav>
   )

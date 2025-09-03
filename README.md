@@ -2,6 +2,10 @@
 
 A real-time opinion trading web app built with TypeScript and microservices architecture.
 
+
+<img width="1470" height="829" alt="Screenshot 2025-09-03 at 11 15 48 PM" src="https://github.com/user-attachments/assets/68b82a69-c229-4494-bf57-2ece48f69f6e" />
+
+
 ## Architecture
 
 ```

@@ -6,7 +6,7 @@ const layout =async ({children}:{children:React.ReactNode}) => {
       const session = await getServerSession(authOptions)
 
     if(session?.user || session?.user?.name!){
-      redirect("/")
+      redirect("/markets")
     }
   return (
     <div>
